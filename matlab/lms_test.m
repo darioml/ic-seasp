@@ -18,8 +18,8 @@ function [y, e, a] = lms_test(x, mu)
     
     for m=3:N-1
         % not sure I agree with this.
-        y(m) = a(m,:) * [x(m) x(m-1)]';
+        y(m) = a(m,:) * [x(m-1) x(m-2)]';
         e(m) = x(m) - y(m);
-        a(m+1,:) = a(m,:) + mu*e(m)*[x(m) x(m-1)];
+        a(m+1,:) = a(m,:) + mu*e(m)*[x(m-1) x(m-2)];
     end
 end
