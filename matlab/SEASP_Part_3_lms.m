@@ -1,12 +1,15 @@
-function [ y,e,a ] = SEASP_Part_3_lms( x, mu, p )
+% y - predicted x
+% e - error
+% a - est variables
+function [y, e, a] = SEASP_Part_3_lms(x, mu, p)
 %SEASP_PART_3_LMS Summary of this function goes here
 %   Detailed explanation goes here
 
-    N = length(x);
+    % p = number of coefficients
+    N = length(x); % number of iterations
     
     e = zeros(N, 1);
     y = zeros(N, 1);
-    
     a = zeros(p, N);
     
     for m=p+1:N % we need to start at order, so that we have enough x values to make use of the algorithm
