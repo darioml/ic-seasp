@@ -8,7 +8,7 @@ est_vars_1 = zeros(100,1000);
 est_vars_2 = zeros(100,1000);
 
 for i=1:100
-    wgn = 0.25*randn([1000 1]);
+    wgn = sqrt(0.25)*randn([1000 1]);
     x = filter(1,[1 -0.1 -0.8],wgn)';
     [~, ~, a] = leaky_lms(x, mu, 0.05);
     est_vars_1(i,:) = a(:,1);

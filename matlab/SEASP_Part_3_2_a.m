@@ -6,7 +6,7 @@ close all
 mu = 0.01;
 wgn = 0.25*randn([2000 1]);
 x = filter(1,[1 -0.9],wgn)';
-[y, e, a] = gass_lms(x, 3, 0.005, 0.8);
+[y, e, a] = gass_lms(x, 1, 0.005, 0.8);
 figure
 hold all
 plot(a(:,1))
