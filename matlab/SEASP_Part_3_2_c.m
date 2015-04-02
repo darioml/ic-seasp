@@ -4,9 +4,12 @@ close all
 %% Let's experiment!
 
 mu = 0.01;
-wgn = 0.25*randn([6000 1]);
-x = filter(1,[1 -0.9],wgn)';
-[y, e, a] = gngd_lms(x,1,0.01);
+
+wgn = sqrt(0.5)*randn([1000 1]);
+x = filter([1 0.9],1,wgn)';
+
+[weight, error, pred_out] = lms_ma(wgn',x,1,0.01);
+
+
 figure
-hold all
-plot(a(:,1))
+plot(0.9-weight)
