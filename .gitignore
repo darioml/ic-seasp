@@ -12,3 +12,4 @@
 *.blg
 matlab/matlab2tikz
 /report/matlabimages/
+matlab/wind-dataset/
