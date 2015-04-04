@@ -46,6 +46,7 @@ for m_local_i = 1:length(M_VALS)
     end
     end0
 
-plot(MSPE)
+plot(D_VALS, MSPE', '*-')
+legend('M = 2','M = 5','M = 10','M = 15','M = 20');
 
 
