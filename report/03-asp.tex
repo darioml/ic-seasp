@@ -8,7 +8,7 @@
 When studying non-linear signals, adaptive filters that approximate the Wiener solutions are considered. The primary focus here will be on the Least Mean Squared (LMS) algorithm, which recursively adjusts the weights following the gradient method of optimisation. Essentially, the weights are updated according to the following equation;
 
 \begin{align*}
-w(n+1) &= w(n) + \mu \frac{\partial}{\partial w}\left( \frac{1}{2}e^2(n) \right),\ \ \ \ \ \ n=0,1,...  \\
+w(n+1) &= w(n) - \mu \frac{\partial}{\partial w}\left( \frac{1}{2}e^2(n) \right),\ \ \ \ \ \ n=0,1,...  \\
 &= w(n) + \mu e(n) x(n) \numberthis \label{equation-lms}
 \end{align*}
 
@@ -48,14 +48,14 @@ x(n) = a_1*x(n-1) + a_2*x(n-2) + \eta(n)
 \label{corr-mtx-base}
 \end{align}	
 
-Two tricks are now used to find $\gamma(0)$ and $\gamma(1)$. To find the variance, $\gamma(0)$, both sides of equation~\ref{corr-mtx-base} are squared and the expectation is taken. To find $\gamma(1)$, each side is multiplied by a $x(n-1)$ term \footnote{ A more general trick that is useful for finding the auto-correlation of any two values can be done by multiplying eq~\ref{corr-mtx-base} by $x(n-k)$. This gives the result $\gamma(k) = a_1\gamma(k-1) + a_2\gamma(k-2)$. However, it is more intutive and helpful to look at the two individual cases of $\gamma = 0,1$. }.
+Two tricks are now used to find $\gamma(0)$ and $\gamma(1)$. To find the variance, $\gamma(0)$, both sides of equation~\ref{corr-mtx-base} are squared and the expectation is taken. To find $\gamma(1)$, each side is multiplied by a $x(n-1)$ term \footnote{ A more general trick that is useful for finding the auto-correlation function for any distance can be done by multiplying eq~\ref{corr-mtx-base} by $x(n-k)$\cite{Cochrane1997a}. This gives the result $\gamma(k) = a_1\gamma(k-1) + a_2\gamma(k-2)$. However, it is more intutive and helpful to look at the two individual cases of $\gamma = 0,1$. }.
 
 \begin{align*}
-E\left[x^2(n)\right] = \gamma(0) &= E\left[  (a_1x(n-1) + a_2x(n-2) + \eta(n))^2  \right]\\
-&= E\left[a_1^2x^2(n-1) + a_2^2x^2(n-2) + 2a_1a_2x(n-1)x(n-2)) + \sigma^2\right]\\
+E\left[x^2(n)\right] &= \gamma(0) = E\left[  (a_1x(n-1) + a_2x(n-2) + \eta(n))^2  \right]\\
+&= E\left[a_1^2x^2(n-1) + a_2^2x^2(n-2) + 2a_1a_2x(n-1)x(n-2)) + 2a_1x(n-1)\eta(n) + 2a_2x(n-2)\eta(n) + \eta^2(n)\right]\\
 &= a_1^2\gamma(0) + a_2^2\gamma(0) + 2a_1a_2\gamma(1) + \sigma^2\\
 \\
-E\left[x(n)x(n-1)\right] = \gamma(1) &= E\left[  a_1x(n-1)x(n-1) + a_2x(n-2)x(n-1) + \eta(n)x(n-1)  \right]\\
+E\left[x(n)x(n-1)\right] &= \gamma(1) = E\left[  a_1x(n-1)x(n-1) + a_2x(n-2)x(n-1) + \eta(n)x(n-1)  \right]\\
 &= a_1\gamma(0) + a_2\gamma(1)
 \end{align*}
 
@@ -80,9 +80,9 @@ Which results in $\gamma(0) = 25/27$ and $\gamma(0) = 25/54$, such that
 \right]
 \end{equation}
 
+\paragraph{To find the convergence in the mean,} a maximum value for $\mu$ is estimated with $2/(trace(\textbf{R}))$, such that $0 \leq \mu \leq \frac{2}{trace(\textbf{R})}$. This gives $0 \leq \mu \leq \frac{729}{625} = 1.1664$.
 
-
-
+A more precise method to do this is to look at the eigenvalues of the auto-correlation matrix. In our case, these are $\mathbf{ \lambda } = [0.4630, 1.3889] ^ T $, which leads to $0 \leq \mu \leq \frac{2}{\lambda_{max}} = 1.43999$ with the maximum convergence speed\footnote{Speed here generally does not make it a good choice - a high $\mu$ leads to instability and large fluctuations.}.  at $\mu = \frac{2}{\lambda_{max} + \lambda_{min}} = 1.08$
 
 
 
@@ -93,7 +93,22 @@ Which results in $\gamma(0) = 25/27$ and $\gamma(0) = 25/54$, such that
 
 Over 1000 samples, the performance of the LMS-algorithm for parameter prediction can be calculate by looking at the squared prediction errror. To do this, a $\mu$ value of $0.01$ and $0.05$ is considered. Both a single run of the algorithm, as well as an averaged error over 100 iterations of the algorithm, are shown.
 
-(graphs)
+
+\begin{figure}[H]
+	\centering
+	\begin{subfigure}[b]{0.45\textwidth}
+		\resizebox{\textwidth}{!}{\input{matlabimages/3_1_b_1_iterations.tikz}}
+	\end{subfigure}%
+	~ %add desired spacing between images, e. g. ~, \quad, \qquad, \hfill etc.
+	%(or a blank line to force the subfigure onto a new line)
+	\begin{subfigure}[b]{0.45\textwidth}
+		\resizebox{\textwidth}{!}{\input{matlabimages/3_1_b_100_iterations.tikz}}
+	\end{subfigure}
+	\caption{Squared Prediction Error of the LMS over 1 and 100 iterations.}
+	\label{fig:animals}
+\end{figure}
+
+
 
 As expected, the higher value of $\mu$ converges faster (as it's learning parameters change more rapidly)\footnote{Faster changes are not always good - a higher value of $\mu$ sometimes leads to instability}. It's interesting to note that for both values of $\mu$, the error reaches values near $-6dB$. This is from the fact that our noise is from $var(\sigma_n^2 = 0.25)$, and $10*log_{10}(0.25) = -6.021$.
 
@@ -111,10 +126,11 @@ Looking over the estimated and the caluclated values for the misadjustment rate,
 
 \begin{table}[h]
 	\centering
-	\begin{tabular}{c c}
-		$\mathcal{M}$ & $\hat{\mathcal{M}}_{LMS} $ \\
-		0.008395      & 0.00926                   \\
-		0.043028      & 0.04630                  
+	\begin{tabular}{ | c |  c | }
+		\hline
+		$\mathcal{M}$ & $\hat{\mathcal{M}}_{LMS} $ \\ \hline
+		0.008395      & 0.00926                   \\ \hline
+		0.043028      & 0.04630                  \\ \hline
 	\end{tabular}
 \end{table}
 
@@ -129,9 +145,23 @@ Looking over the estimated and the caluclated values for the misadjustment rate,
 
 \subsubsection{Steady State Filter Coefficients}
 
-Over 100 independant trials of the LMS algorithm, the mean values of the estimated filter coefficients $\hat{a}_1$ and $\hat{a}_2$ are plotted. As shown, the coefficients approach the actual values with only TODO\% error. 
+Over 100 independant trials of the LMS algorithm, the mean values of the estimated filter coefficients $\hat{a}_1$ and $\hat{a}_2$ are plotted. As shown, the coefficients approach the actual values with only $a_2$ estimated with 4\% error (estimated in both cases as 0.77, rather than 0.8).
 
-graph
+\begin{figure}[H]
+	\centering
+	\begin{subfigure}[b]{0.45\textwidth}
+		\resizebox{\textwidth}{!}{\input{matlabimages/3_1_d_mu0_01.tikz}}
+		\caption{Filter Coefficients for $\mu = 0.01$}
+	\end{subfigure}%
+	~ %add desired spacing between images, e. g. ~, \quad, \qquad, \hfill etc.
+	%(or a blank line to force the subfigure onto a new line)
+	\begin{subfigure}[b]{0.45\textwidth}
+		\resizebox{\textwidth}{!}{\input{matlabimages/3_1_d_mu0_05.tikz}}
+		\caption{Filter Coefficients for $\mu = 0.05$}
+	\end{subfigure}
+	\caption{Approximation of the filter coefficients using the LMS algorithm. Results are averaged over 500 independant trials.}
+	\label{fig:animals}
+\end{figure}
 
 
 
@@ -148,7 +178,9 @@ The cost function used in the standard LMS algorithm does not always converge. T
 
 In this situation, the error function that is to be minimised is change to include an additional term; $J_2(n) = \frac{1}{2}(e^2(n) + \gamma||w(n)||^2_2)$. From here, it is trivial to prove that the weights update according to $\textbf{w}(n+1) = (1-\mu \gamma)\textbf{w}(n) + \mu e(n)\textbf{x}(n)$.
 
-add the proof.
+Starting with;
+
+
 
 
 
@@ -159,9 +191,27 @@ add the proof.
 
 \subsubsection{Implementation}
 
-graph
+\begin{figure}[H]
+	\centering
+	\begin{subfigure}[b]{0.45\textwidth}
+		\resizebox{\textwidth}{!}{\input{matlabimages/3_1_f_mu0_01.tikz}}
+		\caption{Filter Coefficients for $\mu = 0.01$}
+	\end{subfigure}%
+	~ %add desired spacing between images, e. g. ~, \quad, \qquad, \hfill etc.
+	%(or a blank line to force the subfigure onto a new line)
+	\begin{subfigure}[b]{0.45\textwidth}
+		\resizebox{\textwidth}{!}{\input{matlabimages/3_1_f_mu0_05.tikz}}
+		\caption{Filter Coefficients for $\mu = 0.05$}
+	\end{subfigure}
+	\caption{Approximation of the filter coefficients using the Leaky LMS algorithm. Results are averaged over 100 independant trials.}
+	\label{fig:animals}
+\end{figure}
 
-Thought the values to approach the original filter parameters $[0.1 0.8]$, there is a considerably larger margin to the original LMS filter. This can be explained by the addition of the leak, which continually reduces the strength of the weights, even in steady state. In fact, it can be shown that the convergence of the weights is related to a corrupted version of the correlation matrix\cite{Kamenetsky2004}:
+
+
+Though the values do approach the original filter parameters $[0.1, 0.8]$, there is a considerably larger bias when compared to the original LMS filter. In the normal LMS filter, a maximum error of around 4\% was seen - however, in the leaky LMS, both coefficients show a bias of around 10\% to 30\%.
+
+The large error factor is explained by the addition of the leak factor $-\mu\gamma\textbf{w}(n)$, which continually reduces the strength of the weights, even in steady state. In fact, it can be shown that the convergence of the weights is related to a corrupted version of the correlation matrix\cite{Kamenetsky2004}:
 
 \begin{align*}
 \lim_{k \to \inf}E(\textbf{w}(k)) = (\textbf{R} + \gamma \textbf{I})^{-1}\textbf{p}
@@ -200,6 +250,12 @@ To this purpose, three algorithms are investiaged. Each algorithm adaptively upd
 	
 \subsubsection{Implementation of Adaptive Step Sizes}
 
+\begin{figure}[h]
+	\centering 
+	\resizebox{\textwidth}{!}{\input{matlabimages/3_2_a_comparison.tikz}}
+	\caption{Comparison of original LMS and adaprive step sized LMS using the Benveniste, Ang \& Farhang and Matthews \& Xie approaches.}
+	\label{fig:q3_2_a}
+\end{figure}
 
 
 
@@ -217,7 +273,7 @@ By starting with an updated function that relied on the \textit{a posteriori} er
 
 proof
 
-with something = 1 and something = $\frac{1}{\mu}$.
+with $\beta$ = 1 and $\epsilon$ = $\frac{1}{\mu}$.
 
 
 
@@ -227,6 +283,38 @@ with something = 1 and something = $\frac{1}{\mu}$.
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%% PART 3
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsection{Adaptive Noise Cancellation}
+
+In the above two sections, methods to analyse filter coefficients for unknown systems were introduced and compared with one another. These methods can be used in real life examples such as noise reduction.	To this purpose, two configurations of linear predictors are considered for the purpose of noise suppression:
 
 
 
