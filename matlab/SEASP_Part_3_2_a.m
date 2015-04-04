@@ -37,7 +37,7 @@ for ro_local = RO_VALUES
         
         fprintf('Alpha: %i; Ro: %i\n', alpha_local, ro_local);
         if (length(ALPHA_VALUES) > 1)
-            plot(mean(weights), 'DisplayName', sprintf('Alpha = %0.3f', alpha_local));
+            plot(mean(weights), 'DisplayName', sprintf('$\\alpha$ = %0.3f', alpha_local));
         else
             plot(mean(weights));
         end
