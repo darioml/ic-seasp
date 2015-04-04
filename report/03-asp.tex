@@ -318,8 +318,33 @@ In the above two sections, methods to analyse filter coefficients for unknown sy
 
 
 
+\subsubsection{Minimum delay for Adaptive Line Enhancer}
+
+
+\subsubsection{Effect of Filter Order and Delta Delay on MSPE for Adaptive Line Enhancer}
+
+To investigate the performance of the Filter Order ($M$) and the delta delay ($\Delta$), the MSPE metric, defined below, is considered. A sinusoid wave of angular frequency $w_0 = 0.01\pi$ corrupted by coloured noise is considered. In this case, the added noise is deifned by $\eta(n) = v(n) + 0.5v(n-2)$ where $v(n)$ is WGN. 
+
+\begin{equation}
+	MSPE = \frac{1}{N}\sum_{n=0}^{N-1}((x(n)-\hat{x}(n))^2)
+\end{equation}
+
+By running the ALE algorithm on the $s(n)$ for $M=[5,10,15,20]$ and $\Delta = [2,5,10,15,20,25]$, the effects of the algorithm parameters can be calculated. It's important to see %TODO
 
 
 
+\subsubsection{Comparison of Adaptive Line Enhancer and Adaptice Noise Cancellation methods}
+
+A second tpe of noise reduction can be acccomplished with the Adpative Noise Cancellation setup. Here, rather than estimating the original signal, an estimate of the noise is made using a predicion error. The predicion error is a secondary noise input, which is in some way correlated to the noise that is corrupting the original signal.
+
+To compare the ALE and ANC methods, a plot of the output and the error are generated for a range of values. %TODO it can be seen that ...
+
+
+
+\subsubsection{De-Noising a single channel EEG}
+
+The methods descirbed above can be applied to the EEG Dataset introduced in Section 2 to remove the 50Hz hum. The ANC configuration is used, with a 50Hz Signal corrupted by WGN used as the input to the linear predictor. Tuning the algorithm parameters such as to reduce the effects to other frequency bands is accomplished through iteration.
+
+%TODO: write this up a little more nicely.
 
 \end{document}
