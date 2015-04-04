@@ -74,5 +74,9 @@ plot(0.9-mean(output_a1), 'DisplayName', 'Benveniste, ro = 0.001')
 plot(0.9-mean(output_a2), 'DisplayName', 'Ang and Farhang, ro=0.005, alpha=0.85')
 plot(0.9-mean(output_a3), 'DisplayName', 'Matthews and Xie, ro=0.005')
 
+title('A comparison of LMS and Adaptive Step Sizes for LMS Algorithm')
+xlabel('Iteraion (N)')
+ylabel('Weight Error')
+
 legend(gca,'show','Location','Best')
 

@@ -7,13 +7,19 @@ mu = 0.01;
 est_vars_1 = zeros(100,1000);
 est_vars_2 = zeros(100,1000);
 
-for i=1:100
+for i=1:500
     wgn = sqrt(0.25)*randn([1000 1]);
     x = filter(1,[1 -0.1 -0.8],wgn)';
     [~, ~, a] = lms_test(x, mu);
     est_vars_1(i,:) = a(:,1);
     est_vars_2(i,:) = a(:,2);
 end
+
+figure; hold all;
+    plot(mean(est_vars_1)); plot(mean(est_vars_2));
+    title('Estimated Coefficient Values; mu = 0.01');
+    xlabel('Iteration (N)')
+    ylabel('Coeff. Value (w)')
 
 fprintf('For mu = %0.2f, calculated a_1= %0.2f, a_2= %0.2f\n', mu, mean(est_vars_1(end-50:end)), mean(est_vars_2(end-50:end)));
 
@@ -23,13 +29,20 @@ mu = 0.01;
 est_vars_1 = zeros(100,1000);
 est_vars_2 = zeros(100,1000);
 
-for i=1:100
+for i=1:500
     wgn = sqrt(0.25)*randn([1000 1]);
     x = filter(1,[1 -0.1 -0.8],wgn)';
     [~, ~, a] = lms_test(x, mu);
     est_vars_1(i,:) = a(:,1);
     est_vars_2(i,:) = a(:,2);
 end
+
+figure; hold all;
+    plot(mean(est_vars_1)); plot(mean(est_vars_2));
+    title('Estimated Coefficient Values; mu = 0.05');
+    xlabel('Iteration (N)')
+    ylabel('Coeff. Value (w)')
+
 
 fprintf('For mu = %0.2f, calculated a_1= %0.2f, a_2= %0.2f\n', mu, mean(est_vars_1(end-50:end)), mean(est_vars_2(end-50:end)));
 

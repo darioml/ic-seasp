@@ -15,6 +15,12 @@ for i=1:100
     est_vars_2(i,:) = a(:,2);
 end
 
+figure; hold all;
+    plot(mean(est_vars_1)); plot(mean(est_vars_2));
+    title('Estimated Coefficient Values (LLMS); mu = 0.01');
+    xlabel('Iteration (N)')
+    ylabel('Coeff. Value (w)')
+
 fprintf('For mu = %0.2f, calculated a_1= %0.2f, a_2= %0.2f\n', mu, mean(est_vars_1(end-50:end)), mean(est_vars_2(end-50:end)));
 
 
@@ -31,6 +37,12 @@ for i=1:100
     est_vars_2(i,:) = a(:,2);
 end
 
+figure; hold all;
+    plot(mean(est_vars_1)); plot(mean(est_vars_2));
+    title('Estimated Coefficient Values (LLMS); mu = 0.05');
+    xlabel('Iteration (N)')
+    ylabel('Coeff. Value (w)')
+    
 fprintf('For mu = %0.2f, calculated a_1= %0.2f, a_2= %0.2f\n', mu, mean(est_vars_1(end-50:end)), mean(est_vars_2(end-50:end)));
 
 
