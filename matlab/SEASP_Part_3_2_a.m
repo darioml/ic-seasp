@@ -55,7 +55,7 @@ output_mu01= zeros(100,1001);
 output_a1  = zeros(100,1001);
 output_a2  = zeros(100,1001);
 output_a3  = zeros(100,1001);
-for i=1:100,
+for i=1:500,
     wgn = sqrt(0.5)*randn([1000 1]);
     x = filter([1 0.9],1,wgn)';
     

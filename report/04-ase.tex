@@ -1,5 +1,201 @@
 \documentclass[main.tex]{subfiles}
 \begin{document}
-\section{}
+\section{Widley Linear Filtering and Adaptive Spectrum Estimation}
+
+\subsection{Complex LMS and Widely Linear Modelling}
+
+In what has previously been analysed, only real time signals have been considered. However, complex-valued signals are a crucial way of representing informations in communications, signal proccessing, biomedial signal processing and related fields. Complex values are either created by design (such as in communications), or are a convenient way of describing two dimensional environemnt parameters (such as wind direction). 
+
+Applying similar methods for coefficient estimation in the complex space is possible with a few modifications to the original algorithms. The Complex-Least Mean Squared (CLMS) algorithm is one of the more widely used algorithms, and is defined in much the same way as the LMS algorithm introduced in Section 3. 
+
+However, the CLMS algorithm is not guaranteed to capture correct filter coefficients for all situations. When considering a non-circular, the resulting estimation for the filter coefficients from the CLMS does not capture second order dependencies. 
+
+\subsubsection{Comparison of CLMS and ACLMS}
+
+As the CLMS algorithm does neccecssarily capture second order statistical relationships, the Augmented CLMS (ACLMS) is introduced. This is able to capture the second order relationships by including a second set of coefficients which acts on the \textbf{conjugate} of the input vector $\textbf{x}$. The algorithm is defined as;
+
+\begin{align*}
+\hat{y}(n) &= \textbf{h}^H(n)\textbf{x}(n) + \textbf{g}^H(n)\textbf{x}^*(n) \numberthis \label{eq-4-1-a-yest}\\
+e(n) &= y(n) - \hat{y}(n)\\
+\textbf{h}(n+1) &= \textbf{h}(n) + \mu e^*(n) \textbf{x}(n)\\
+\textbf{g}(n+1) &= \textbf{g}(n) + \mu e^*(n) \textbf{x}^*(n)
+\end{align*}
+
+The effectiveness of the CLMS and ALMS is tested by considering the following WLMA(1) input. A model order of 1 is passed to both the CLMS and ACLMS algorithms, with the results show in figure %TODO
+
+\begin{equation}
+y(n) = x(n) + b_1x(n-1) + b_2x(n=1)\ \ \ \ \ \ x \sim \mathcal{N}(0,1)
+\end{equation}
+
+where $x$ is complex, circular WGN, $b_1 = 1.5+1j$, $b_2  = 2.5-0.5j$.
+
+%TODO Figure
+
+As expected, the CLMS only captures part of the relationship between input and output, and only the first variable, $b_1$ is captured. When turning to the ACLM, both dependencies are captured.
+
+\subsubsection{Bivariate Wind Data}
+
+As well as estimating filter coefficients for direct WLMA processes, the CLMS and ACLMS algorithms can be used to predict real life data. Three sets of wind data (One for each low, medium and high wind strenght) are passed through each algorithm to attempt to model and predict future wind patterns.
+
+%TODO Scatter plots
+
+From the scatter plots of the wind data, it can be extrapolated that the CLMS is sufficient for low wind data, as it appears to be more circular. However, medium and high wind strength appears less circular, indicating that the CLMS might not be able to fully follow the model. 
+
+To investiage the performance of the CLMS and the ACLMS algorithms for the wind data, the steady state error averaged over 500 iterations is captured for a number of orders and learning coefficient values. The results show that %TODO
+
+
+
+
+
+\subsubsection{Three Phased Power Systems}
+
+To investiaget the effect of biased versus unbiased three phased power systems, a matlab function {\tt p4\_three\_phase\_power} is introduced. The inputs here allow the definition of $V_a, V_b, V_c$, as well as $\phi, \Delta_b, \Delta_c$. The output of the function is the Clarke voltage, calculated through the Clarke Transform.  
+
+The Clarke voltage is defined as
+
+\begin{align*}
+v(n) &= A(n)e^{j(2 \pi \frac{f_0}{f_s}n + \phi)} + B(n)e^{-j(2 \pi \frac{f_0}{f_s}n + \phi)}, \numberthis \label{eq-4-1-c-unbal}\\
+where\ \ A(n) &= \frac{\sqrt{6}}{6}\left(V_a(n) + V_b(n)e^{j\Delta_b} + V_c(n)e^{j\Delta_c}\right)\\
+and\ \ B(n) &= \frac{\sqrt{6}}{6}\left(V_a(n) + V_b(n)e^{-j(\Delta_b+2\pi/3)} + V_c(n)e^{-j(\Delta_c-2\pi/3)}\right)
+\end{align*}
+
+which simplifies to the following in the situation where the system is balanced, as $B(n)$ becomes 0.
+
+\begin{equation}
+v(n) = \sqrt{\frac{3}{2}} V e^{j(2 \pi \frac{f_0}{f_s}n + \phi)} \label{eq-4-1-c-bal}
+\end{equation}
+
+
+%TODO: add the graphs here
+
+When plotting the circularity diagrams of both a balanced and unbalanced system, it can be seen that only a balanced system will have %TODO: what happens with phase 
+
+
+
+\subsubsection{Clarke Voltage Frequency from Filter Coefficients}
+
+
+The frequency of the Clarke Voltage can be extracted from the filter coefficients of the CLMS or the ACLMS. Two seperate situations are investigated: the strictly linear (Equation~\ref{eq-4-1-d-first}) and the widely linear (Equation~\ref{eq-4-1-d-second}) models.
+
+\begin{align}
+v(n+1) &= h^*(n)v(n) \label{eq-4-1-d-first}\\
+v(n+1) &= h^*(n)v(n) + g^*(n)v^*(n) \label{eq-4-1-d-second}
+\end{align}
+
+\paragraph{For the strictly linear model,} equation~\ref{eq-4-1-c-bal} is used to find expressions for $v(n+1)$ and $v(n)$. These are substituted into equation~\ref{eq-4-1-d-first} to give
+
+\begin{align*}
+\sqrt{\frac{3}{2}} V e^{j(2 \pi \frac{f_0}{f_s}(n+1) + \phi)} &= h^*(n)\sqrt{\frac{3}{2}} V e^{j(2 \pi \frac{f_0}{f_s}n + \phi)}\\
+e^{j(2 \pi \frac{f_0}{f_s}n + \phi)}e^{j(2 \pi \frac{f_0}{f_s})} &= h^*(n) e^{j(2 \pi \frac{f_0}{f_s}n + \phi)}\\
+e^{j(2 \pi \frac{f_0}{f_s})} &= h^*(n) \\
+arg(e^{j(2 \pi \frac{f_0}{f_s})}) &= arg(h^*(n)) \\
+2 \pi \frac{f_0}{f_s} &= arctan\left(\frac{I(h^*(x))}{R(h^*(x))}\right) \\
+f_0 &= - \frac{f_s}{2\pi} arctan\left(\frac{I(h(x))}{R(h(x))}\right) \\
+\end{align*}
+
+\paragraph{For the widely linear model,} the equations \ref{eq-4-1-c-unbal} and \ref{eq-4-1-d-second} are used to gather terms for $v(n+1)$ and $\hat{v}(n+1)$. The coefficients for both of these terms are equated to extrapolate the value of $f_0$ %TODO \cite{Xia2012} 
+
+\begin{align*}
+v(n+1) &= A(n+1)e^{j2\pi\frac{f_0}{f_s}}e^{j(2\pi  \frac{f_0}{f_s}n+\phi)} + B(n+1)e^{-j2\pi\frac{f_0}{f_s}}e^{-j(2\pi  \frac{f_0}{f_s}n+\phi)}\\
+\hat{v}(n+1) &= h^*(n)\left(A(n)e^{j(2\pi\frac{f_0}{f_s}n+\phi)} + B(n)e^{-j(2\pi\frac{f_0}{f_s}n+\phi)}\right) + g^*(n)\left(A^*(n)e^{-j(2\pi\frac{f_0}{f_s}n+\phi)} + B^*(n)e^{j(2\pi\frac{f_0}{f_s}n+\phi)}\right)\\
+&= \left[h^*(n)A(n) + g^*(n)B^*(n)\right] e^{j(2\pi\frac{f_0}{f_s}n+\phi)} + \left[h^*(n)B(n) + g^*(n)A^*(n)\right] e^{-j(2\pi\frac{f_0}{f_s}n+\phi)}
+\end{align*}
+
+At steady state, we can make two assumptions; Firstly, $A(n) \simeq A(n+1)$ and $B(n) \simeq B(n+1)$. Secondly, $v(n+1) \simeq \hat{v}(n+1)$. With these two assumptions, we can equate the first and second right hand side (RHS) terms,to find the two equations for the term $e^{j2\pi\frac{f_0}{f_s}}$;
+
+\begin{align*}
+e^{j2\pi\frac{f_0}{f_s}} &= \frac{A(n)h^*(n) + B^*(n)g^*(n)}{A(n+1)} \simeq \frac{A(n)h^*(n) + B^*(n)g^*(n)}{A(n)} \\
+e^{-j2\pi\frac{f_0}{f_s}} &= \frac{A^*(n)g^*(n) + B(n)h^*(n)}{B(n+1)} \simeq \frac{A^*(n)g^*(n) + B(n)h^*(n)}{B(n)}\\
+\left[e^{-j2\pi\frac{f_0}{f_s}}\right]^* &= e^{j2\pi\frac{f_0}{f_s}} =  \frac{A(n)g(n) + B^*(n)h(n)}{B^*(n)}
+\end{align*}
+
+Thus, we get
+
+\begin{align*}
+e^{j2\pi\frac{f_0}{f_s}} &= h^*(n) + \frac{B^*(n)}{A(n)}g^*(n)\\
+e^{j2\pi\frac{f_0}{f_s}} &= h(n) + \frac{A(n)}{B^*(n)}g(n)
+\end{align*}
+
+It can be shown that $A(n)$ will always be real, and that $B(n)$ is complex. Therefore, $B^*(n)/A(n) = \left(B(n)/A(n)\right)^*$. If we consider $a(n) = (B(n)/A(n))^*$, and equate the two equations above,
+
+\begin{align*}
+h^*(n) + a(n)g^*(n) = h(n) + \frac{1}{a(n)}g(n)\\
+a^2(n)\left[g^*(n)\right] + a(n)\left[h^*(n) - h(n)\right] + \left[-g(n)\right] &= 0\\
+a^2(n)\left[g^*(n)\right] + a(n)\left[2jIm(h^*(n))\right] + \left[-g(n)\right] &= 0
+\end{align*}
+
+Solving for $a(n)$,
+
+\begin{align*}
+a_{1,2}(n) &= \frac{-2jIm(h^*(n)) \pm \sqrt{ (-2jIm(h^*(n)))^2 -4(g^*(n) * g(n)) } }{2g^*(n)}\\
+a_{1,2}(n) &= \frac{-jIm(h^*(n)) \pm \sqrt{ -Im^2(h^*(n)) -|g^*(n)|^2 } }{g^*(n)}\\
+a_{1,2}(n) &= \frac{-jIm(h^*(n)) \pm j\sqrt{ Im^2(h^*(n)) + |g^*(n)|^2 } }{g^*(n)}\\
+\end{align*}
+
+Therefore, the term $e^{j2\pi\frac{f_0}{f_s}}$ is approximated by either $h^*(n) + a_1(n)g^*(n)$ or $h^*(n) + a_2(n)g^*(n)$. However, since the system frequency is much smaller than the sampling frequency, the imaginary part of $e^{j2\pi\frac{f_0}{f_s}}$ must be positive. Thus, only $a_1$ can be considered, allowing us to extrapolate a term for $f_0$.
+
+\begin{align*}
+e^{j2\pi\frac{f_0}{f_s}} &= h^*(n) + \frac{-jIm(h^*(n)) + j\sqrt{ Im^2(h^*(n)) + |g^*(n)|^2 } }{g^*(n)}g^*(n)\\
+arg(e^{j2\pi\frac{f_0}{f_s}}) &= arg\left(h^*(n) + -jIm(h^*(n)) + j\sqrt{ Im^2(h^*(n)) + |g^*(n)|^2 } \right)\\
+2\pi\frac{f_0}{f_s} &= arctan(\frac{Im(h^*(n)) - Im(h^*(n)))+\sqrt{ Im^2(h^*(n)) + |g^*(n)|^2 }}{Re(h^*(n))})\\
+f_0 &= \frac{f_s}{2\pi}arctan(\frac{\sqrt{ Im^2(h^*(n)) + |g^*(n)|^2 }}{Re(h^*(n))}) = \frac{f_s}{2\pi}arctan(\frac{\sqrt{ Im^2(h(n)) + |g(n)|^2 }}{Re(h(n))})
+\end{align*}
+
+
+\subsubsection{Estimation of Clarke Voltage using CLMS and ACLMS}
+
+Using the expressions from the above proof, the CLMS and ACLMS algorithms are used to calculate values of the frequency for balanced and unbalanced systems using the the weight vectors $\textbf{h}^*(n)$ and $\textbf{g}^*(n)$. 
+%TODO: Graphs
+%TODO: Clms doesn't give the expected freequency - this is why
+
+\subsection{Adaptive AR Model Based Time-Frequency Estimation}
+
+In section 2.2, the AR spectrum of a stationary signal was produced. However, the method used fails when looking at non-stationary signals. The LMS algorithm is used to find the filter coefficients for a given signal; and over each iteration of the LMS algorithm, the relevant spectrum is generated. 
+
+\subsubsection{Filter Coefficients for AR(1)}
+
+\subsubsection{Spectrogram using the LMS Algorithm}
+
+
+
+
+
+
+
+\subsection{A Real Time Spectrum Analyser Using Least Mean Square}
+
+The LMS algorithm can also be used to carry out a real-time spectrum analyser on an input. In every situation used previously, the LMS algorithm find the weights $\textbf{w}(n)$ that can predict the signal $\textbf{y}(n)$ from input $\textbf{x}(n)$. By realising that any signal can be estimated by a linear combinations of $N$ harmonically related sinusoids,
+
+\begin{equation*}
+\hat{y}(n) = \sum_{k=0}^{N-1}w(k)e^{j2\pi kn/N}
+\end{equation*}
+
+one can construct construct a $MA(N)$ algorithm with input 
+
+\begin{equation}
+\textbf{x}(n) = \frac{1}{N}\left[1\ \ \ e^{j2\pi n/N}\ \ \ ...\ \ \ e^{j2\pi (N-1)/N}\right]^T
+\end{equation}
+
+
+such that the modified CLMS (DFT-CLMS) algorithm operates on the following principles
+
+\begin{align*}
+\hat{y}(n) &= \textbf{w}^H(n)\textbf{x}(n)\\
+e(n) &= y(n) - \hat{y}(n)\\
+\textbf{w}(n+1) &= \textbf{w}(n) + \mu e^*(n)\textbf{x}(n)
+\end{align*}
+
+
+As the LMS algorithm now searches for weights that will linearly combine harmonic frequecies $\textbf{x}(n)$ to approximate the value of $y(n)$, it should be noted that these weights will approximate the fourier coefficients from the DFT. 
+
+\subsubsection{Least Squares Solution and Comparison to DFT}
+
+\subsubsection{Fourier Transform as a Change of Basis}
+
+\subsubsection{DFT-CLMS implementation of FM signal}
+
+\subsubsection{Applying the DFT-CLMS for EEG Data}
+
+
 
 \end{document}
