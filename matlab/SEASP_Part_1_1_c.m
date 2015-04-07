@@ -8,6 +8,12 @@ fft1000 = fft(x, 1000);
 
 figure;
 stem([-500:10:490], abs(fftshift(fft100)));
+
+hold all;
+
+plot([-500:1:499], abs(fftshift(fft1000)));
+
+
 title('DFT(100) of 24Hz');
 xlabel('Frequency (Hz)');
 ylabel('Magnitude');

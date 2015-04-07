@@ -3,22 +3,36 @@
 
 \section{Non-parametric Spectrum Estimation}
 
+
 \subsection{Discrete Fourier Transform Basis}
 
 \subsubsection{Ideal Fourier Spectrum and DTFT}
 
+Before diving into estimations with matlab, it's useful to be able to sketch out the expected results for the ideal Fourier specturm, as well as the DFT for a signal, and to compare this with the restuls we will gather in Matlab. To this purpose, a 20Hz signal is considered, and it's fourier spectrum is drawn side by side with the DFT (\textit{Using a windowed input}).
+
+%TODO Sketch
+
+It's important to note that the DFT will be symmetrical around the y-axis, and will be repeated every $2\pi$ \textit{Sampling in the time domain is repitition on the frequency domain. Sampling in the frequency domain is repitition in the time domain}.
+
+
 \subsubsection{Comparison to Matlab result}
+
+Turning to matlab, the results found above can be verified. By using the DFT with two different point-numbers, the two results found above are plotted.
 
 \begin{figure}[H]
 	\centering 
 	\resizebox{0.8\textwidth}{!}{\input{matlabimages/1-1-b.tikz}}
-	\caption{100 (left) and 1000 (right) point DFT results using matlab's {\tt fft} function}
+	\caption{100 (left) and 1000 (right) point DFT results using matlab's {\tt fft} function. The {\tt fftshit} function has been used to center the results around the y-axis.}
 	\label{fig:q1_1_b}
 \end{figure}
 
+The DFT will always window the input, but with a of 100, the lobes are invisible as the frequency resolution is not high enouhg. By increasing the DFT-side of 1000, the lobes that arise from the windowing are perfectly visible. However, we are able to pefectly see the two peaks at $20Hz$ with a magnitude of $50$.
+
+It's imporant to note that the DFT will only give a single spectrum of $[-\pi,\pi)$ (or $[0, 2\pi)$ without {\tt fftshift}). However, the true DFT will be repeated every multiple of $2\pi$, such that $X(w) = X(w+2\pi)$.
 
 \subsubsection{Incoherent Sampling}
 
+To illustrate some of the limitations of the DFT spectrum, consider a 24Hz signal sampled at 1000Hz. If the 100-point DFT is taken, the frequency resolution will only be 10Hz, meaning that the peak of the lobe at 24Hz will not be captured. 
 
 \begin{figure}[H]
 	\centering 
@@ -27,23 +41,67 @@
 	\label{fig:q1_1_c}
 \end{figure}
 
-
+%TODO: Incoherent Sampling
 
 
 
 
 \subsection{Properties of Power Spectral Density (PSD)}
 
+%TODO Proof
 
 \subsubsection{Symmetry of input vector x}
 
+With $\textbf{x}$ defined as $\textbf{x} = [r(0), r(1),...r(M-1),0,...0,r(-M-1),...,r(-1)]^T$, the time domain and the frequency domain for $\textbf{x}$ are shown. 
+
+\begin{figure}[H]
+	\centering 
+	\resizebox{\textwidth}{!}{\input{matlabimages/1-2-a.tikz}}
+	\caption{Plot of vector $\textbf{x}$ and corresponding FFT with L=256 and M=10,128.}
+	\label{fig:q1_2_a}
+\end{figure}
+
+
+In reality, the PSD of an input is estiamted by the FFT of the autocovariance function $r(k)$. However, this signal is defined for negative values of $k$, as the signal is non-zero for $-M < k < 0$. These negative indecies are not handled well in matlab's {\tt fft()} function, and so to overcome this the input signal is passed through a circular shift\footnote{The circular shift in time will have no effect on the \textbf{magnitude} of the FFT, so is valud.} such that $x(L) = r(-1)$.
+
+\begin{figure}[H]
+	\centering 
+	\resizebox{0.8\textwidth}{!}{\input{matlabimages/1-2-a-shift.tikz}}
+	\caption{Circular shift of the autocorrelation function. Zero padding must be preserved to the right of the ACF, therefore this is circular.}
+	\label{fig:q1_2_a-shift}
+\end{figure}
+
+As our correlation function might not be defined for all values of L, where L is the number of points for the FFT, zero-padding must be considered. Zero padding should be applied to the original auto-correlation function, and so this happens before the circular shift is applied. Therefore, after the circular shift, the 0 padding will appear in the \textbf{center} of the vector $\textbf{x}$, as opposed to the end of it.
+
+
 \subsubsection{Removing Round-Off Errors}
+
+As the autocorrelation function $\textbf{r(k)}$ is symmetrical, non-negative and real, it's expected that the FFT is real for all $R(\omega)$. However, due to rounding errors arising from floating-point precision issues, there may be a small imaginary component to the spectral estimate in the above case. 
+
+A simple analysis of the value of $\textbf{fft\_x} = fft(\textbf{x})$ shows that all imaginary components are in the magnitude of $10^{-14}$, and can be safely ignored as $real(\textbf{fft\_x}) = abs(\textbf{fft\_x})$. 
+
+%TODO how to demonstrate it's better?
+
 
 \subsubsection{FFT of Asymmetrical Input Vector z}
 
+Although $\textbf{z}$ is similar to $\textbf{x}$, the main difference is the order in which the shift and the zero padding have been applied. The fact that $\textbf{z}$ has zero padding  to $L$ applied \textbf{after} the shift into positive k values, the actual PSD we are estimating is of a signal with ACF shown below.
+
+\begin{figure}[H]
+	\centering 
+	\resizebox{0.8\textwidth}{!}{\input{matlabimages/1-2-c.tikz}}
+	\caption{Input vector $\textbf{z}$ shown on the left, with the equivalent ACF function on the right. Note the ACF function is not symmetrical, therefore cannot be accomplished by a real signal. The FFT will have imaginary components.}
+	\label{fig:q1_2_c}
+\end{figure}
+
+If the time shifted (but not circularly-shifted) ACF funciton is considered, such that $\textbf{z}=[r(-M+1),...,r(-1),r(0),r(1),...,r(M-1),0,...,0]$, the imaginary part can no longer be safely ignored. As the input $\textbf{z}$ is no longer 
+symmetrical, the fft is expected to have imaginary parts.
+
 \subsubsection{Centering the DFT and ACF values around 0}
 
+As Matlab works onyl with positive indexes, the use of matlab functions such as {\tt fft} will give the spectral estimation in the range $[0,2\pi)$. The function {\tt fftshift} is a helpful way to convert from $[0,2\pi)$ to the more conventional $[-\pi,\pi)$. This can then be plotted with matlab's plot function {\tt plot(x,fftshift(fft(x)))}, where x is a vector containing the values of $[-\pi,\pi)$.
 
+This vector can be calculated by the value {\tt linspace(-$\pi$, $\pi$, L)} where L is the number of points in the FFT ({\tt length(fft(x))}). The reverse action, which is to annotate the correct values of time for the {\tt ifft}, the values of t should be {\tt linspace((L/2)-1, L/2, L)}. %TODO Go over this....
 
 
 
