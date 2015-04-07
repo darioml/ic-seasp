@@ -20,22 +20,23 @@ genNoise = 2*sin(2*pi*(freq/fs)*(0:N-1)) + sqrt(0.25)*randn([1 N]);
 
 
 
-fft_len = 1024;
-win_len = 1024;
-win_han =  hanning(win_len);
+FFTLENGTH = 1024;
+WINDOWLENGTH = 1024;
+
+window =  hanning(WINDOWLENGTH);
 subplot(1,2,1)
-spectrogram(output, win_han, round(0.5*win_len), fft_len, fs, 'yaxis')
+spectrogram(output, window, round(0.5*WINDOWLENGTH), FFTLENGTH, fs, 'yaxis')
 axis([0 N/fs-1 0 150])
 title('POz (Noise Removed)')
 xlabel('Time(s)')
 subplot(1,2,2)
-spectrogram(POz, win_han, round(0.5*win_len), fft_len, fs, 'yaxis')
+spectrogram(POz, window, round(0.5*WINDOWLENGTH), FFTLENGTH, fs, 'yaxis')
 axis([0 N/fs-1 0 150])
 title('POz (Original Signal)')
 xlabel('Time(s)')
 
 figure
-spectrogram(POz-output', win_han, round(0.1*win_len), fft_len, fs, 'yaxis')
+spectrogram(POz-output', window, round(0.1*WINDOWLENGTH), FFTLENGTH, fs, 'yaxis')
 axis([0 N/fs-1 0 150])
 title('POz (Original Signal - Noise Removed)')
 xlabel('Time(s)')
