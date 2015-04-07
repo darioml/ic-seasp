@@ -89,8 +89,8 @@ v(n+1) &= h^*(n)v(n) + g^*(n)v^*(n) \label{eq-4-1-d-second}
 e^{j(2 \pi \frac{f_0}{f_s}n + \phi)}e^{j(2 \pi \frac{f_0}{f_s})} &= h^*(n) e^{j(2 \pi \frac{f_0}{f_s}n + \phi)}\\
 e^{j(2 \pi \frac{f_0}{f_s})} &= h^*(n) \\
 arg(e^{j(2 \pi \frac{f_0}{f_s})}) &= arg(h^*(n)) \\
-2 \pi \frac{f_0}{f_s} &= arctan\left(\frac{I(h^*(x))}{R(h^*(x))}\right) \\
-f_0 &= - \frac{f_s}{2\pi} arctan\left(\frac{I(h(x))}{R(h(x))}\right) \\
+2 \pi \frac{f_0}{f_s} &= arctan\left(\frac{\Im(h^*(x))}{\Re(h^*(x))}\right) \\
+f_0 &= - \frac{f_s}{2\pi} arctan\left(\frac{\Im(h(x))}{\Re(h(x))}\right) \\
 \end{align*}
 
 \paragraph{For the widely linear model,} the equations \ref{eq-4-1-c-unbal} and \ref{eq-4-1-d-second} are used to gather terms for $v(n+1)$ and $\hat{v}(n+1)$. The coefficients for both of these terms are equated to extrapolate the value of $f_0$ %TODO \cite{Xia2012} 
@@ -121,24 +121,24 @@ It can be shown that $A(n)$ will always be real, and that $B(n)$ is complex. The
 \begin{align*}
 h^*(n) + a(n)g^*(n) = h(n) + \frac{1}{a(n)}g(n)\\
 a^2(n)\left[g^*(n)\right] + a(n)\left[h^*(n) - h(n)\right] + \left[-g(n)\right] &= 0\\
-a^2(n)\left[g^*(n)\right] + a(n)\left[2jIm(h^*(n))\right] + \left[-g(n)\right] &= 0
+a^2(n)\left[g^*(n)\right] + a(n)\left[2j\Im(h^*(n))\right] + \left[-g(n)\right] &= 0
 \end{align*}
 
 Solving for $a(n)$,
 
 \begin{align*}
-a_{1,2}(n) &= \frac{-2jIm(h^*(n)) \pm \sqrt{ (-2jIm(h^*(n)))^2 -4(g^*(n) * g(n)) } }{2g^*(n)}\\
-a_{1,2}(n) &= \frac{-jIm(h^*(n)) \pm \sqrt{ -Im^2(h^*(n)) -|g^*(n)|^2 } }{g^*(n)}\\
-a_{1,2}(n) &= \frac{-jIm(h^*(n)) \pm j\sqrt{ Im^2(h^*(n)) + |g^*(n)|^2 } }{g^*(n)}\\
+a_{1,2}(n) &= \frac{-2j\Im(h^*(n)) \pm \sqrt{ (-2j\Im(h^*(n)))^2 -4(g^*(n) * g(n)) } }{2g^*(n)}\\
+a_{1,2}(n) &= \frac{-j\Im(h^*(n)) \pm \sqrt{ -\Im^2(h^*(n)) -|g^*(n)|^2 } }{g^*(n)}\\
+a_{1,2}(n) &= \frac{-j\Im(h^*(n)) \pm j\sqrt{ \Im^2(h^*(n)) + |g^*(n)|^2 } }{g^*(n)}\\
 \end{align*}
 
 Therefore, the term $e^{j2\pi\frac{f_0}{f_s}}$ is approximated by either $h^*(n) + a_1(n)g^*(n)$ or $h^*(n) + a_2(n)g^*(n)$. However, since the system frequency is much smaller than the sampling frequency, the imaginary part of $e^{j2\pi\frac{f_0}{f_s}}$ must be positive. Thus, only $a_1$ can be considered, allowing us to extrapolate a term for $f_0$.
 
 \begin{align*}
-e^{j2\pi\frac{f_0}{f_s}} &= h^*(n) + \frac{-jIm(h^*(n)) + j\sqrt{ Im^2(h^*(n)) + |g^*(n)|^2 } }{g^*(n)}g^*(n)\\
-arg(e^{j2\pi\frac{f_0}{f_s}}) &= arg\left(h^*(n) + -jIm(h^*(n)) + j\sqrt{ Im^2(h^*(n)) + |g^*(n)|^2 } \right)\\
-2\pi\frac{f_0}{f_s} &= arctan(\frac{Im(h^*(n)) - Im(h^*(n)))+\sqrt{ Im^2(h^*(n)) + |g^*(n)|^2 }}{Re(h^*(n))})\\
-f_0 &= \frac{f_s}{2\pi}arctan(\frac{\sqrt{ Im^2(h^*(n)) + |g^*(n)|^2 }}{Re(h^*(n))}) = \frac{f_s}{2\pi}arctan(\frac{\sqrt{ Im^2(h(n)) + |g(n)|^2 }}{Re(h(n))})
+e^{j2\pi\frac{f_0}{f_s}} &= h^*(n) + \frac{-j\Im(h^*(n)) + j\sqrt{ \Im^2(h^*(n)) + |g^*(n)|^2 } }{g^*(n)}g^*(n)\\
+arg(e^{j2\pi\frac{f_0}{f_s}}) &= arg\left(h^*(n) + -j\Im(h^*(n)) + j\sqrt{ \Im^2(h^*(n)) + |g^*(n)|^2 } \right)\\
+2\pi\frac{f_0}{f_s} &= arctan(\frac{\Im(h^*(n)) - \Im(h^*(n)))+\sqrt{ \Im^2(h^*(n)) + |g^*(n)|^2 }}{\Re(h^*(n))})\\
+f_0 &= \frac{f_s}{2\pi}arctan(\frac{\sqrt{ \Im^2(h^*(n)) + |g^*(n)|^2 }}{\Re(h^*(n))}) = \frac{f_s}{2\pi}arctan(\frac{\sqrt{ \Im^2(h(n)) + |g(n)|^2 }}{\Re(h(n))})
 \end{align*}
 
 
@@ -166,9 +166,9 @@ In section 2.2, the AR spectrum of a stationary signal was produced. However, th
 
 The LMS algorithm can also be used to carry out a real-time spectrum analyser on an input. In every situation used previously, the LMS algorithm find the weights $\textbf{w}(n)$ that can predict the signal $\textbf{y}(n)$ from input $\textbf{x}(n)$. By realising that any signal can be estimated by a linear combinations of $N$ harmonically related sinusoids,
 
-\begin{equation*}
-\hat{y}(n) = \sum_{k=0}^{N-1}w(k)e^{j2\pi kn/N}
-\end{equation*}
+\begin{equation}
+\hat{y}(n) = \sum_{k=0}^{N-1}w(k)e^{j2\pi kn/N} \label{eq-4-3-a-yhat}
+\end{equation}
 
 one can construct construct a $MA(N)$ algorithm with input 
 
@@ -181,7 +181,7 @@ such that the modified CLMS (DFT-CLMS) algorithm operates on the following princ
 
 \begin{align*}
 \hat{y}(n) &= \textbf{w}^H(n)\textbf{x}(n)\\
-e(n) &= y(n) - \hat{y}(n)\\
+e(n) &= y(n) - \hat{y}(n) \numberthis \label{eq-4-3-dft-clms}\\
 \textbf{w}(n+1) &= \textbf{w}(n) + \mu e^*(n)\textbf{x}(n)
 \end{align*}
 
@@ -194,7 +194,19 @@ As the LMS algorithm now searches for weights that will linearly combine harmoni
 
 \subsubsection{DFT-CLMS implementation of FM signal}
 
+By using the DFT-CLMS algorithm defined in Equation~\ref{eq-4-3-dft-clms}, the time-frequency plot is created by a heat diagram of the weights $\textbf{w}(n)$. %TODO: Compare this tot he AR-spectrum
+
+%TODO: Why does it not resemble the true power specturm
+
+The spectrum from figure TODO is only an estimate of the true spectrum of theunderlying signal. Two considerations need to be considered to understand why it is not exact. 
+
+\begin{enumerate}
+	\item The DFT-CLMS at steady state only approximates the actual value of $y(n)$ with a linear combination of the harmonically related sinusoidal input $\textbf{x}(n)$. As such, the spectrum in figure TODO is of the estimated signal $\hat{y}(n)$, defined in equation~\ref{eq-4-3-a-yhat}.
+	\item Depending on the value of $\mu$, it should be noted that the values of $w(n)$ do not always approach the exact value of the fourier coefficients. Therefore, the spectrum will not be exact, especially for a rich input signal $y(n)$. From cite{TODO Widrow1987} the spectrum is at it's most exact when $\mu$ is set to $1/2$.
+\end{enumerate}
+
 \subsubsection{Applying the DFT-CLMS for EEG Data}
+
 
 
 

@@ -16,15 +16,19 @@ plot(0.9-weight)
 
 %% compare them here
 
+N_iters = 10;
 
-output_benv = zeros(100,1001);
-output_gngd = zeros(100,1001);
-for i=1:100,
+output_benv = zeros(N_iters,1001);
+output_gngd = zeros(N_iters,1001);
+for i=1:N_iters,
     wgn = sqrt(0.5)*randn([1000 1]);
     x = filter([1 0.9],1,wgn)';
     
-    [output_benv(i,:) , ~, ~] = lms_ma_gss(wgn',x,1,1,0.001,0);
-    [output_gngd(i,:), ~, ~]  = lms_ma_gngd(wgn',x,1,0.001,1);
+    [w, ~, ~] = lms_ma_gss(wgn',x,2,1,0.01,0);
+    output_benv(i,:) = w(:,2);
+
+    [w, ~, ~]  = lms_ma_gngd(wgn', x, 2, 1, 1);
+    output_gngd(i,:) = w(2,:);
 end
 
 figure; hold all; grid on;

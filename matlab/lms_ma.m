@@ -10,9 +10,9 @@ function [ weights, error, pred_out ] = lms_ma( in, out, order, mu )
     weights  = zeros(N,order);
     
     for m=order+1:N
-        pred_out(m) = weights(m,:) * in(m-1:-1:m-order)';
+        pred_out(m) = weights(m,:) * in(m:-1:m-order+1)';
         error(m)    = out(m) - pred_out(m);
-        weights(m+1,:) = weights(m,:) + mu*error(m)*in(m-1:-1:m-order);
+        weights(m+1,:) = weights(m,:) + mu*error(m)*in(m:-1:m-order+1);
     end
 end
 

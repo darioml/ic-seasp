@@ -1,6 +1,7 @@
 function [] = export(inputName)
     set(gca,'TickDir','out');
     set(gca,'Box','off');
+    set(gcf,'color','w');
 
     
     cleanfigure;

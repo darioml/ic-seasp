@@ -41,14 +41,14 @@ E \left\{ x[n-2]x[n-1]\right\} & E \left\{x[n-2]^2 \right\} \end{array}
 \right]
 \end{align*}
 
-From here, we can consider\cite{Garc2012a};
+From here, we can consider %TODO: \cite{Garc2012a};
 
 \begin{align}
 x(n) = a_1*x(n-1) + a_2*x(n-2) + \eta(n)
 \label{corr-mtx-base}
 \end{align}	
 
-Two tricks are now used to find $\gamma(0)$ and $\gamma(1)$. To find the variance, $\gamma(0)$, both sides of equation~\ref{corr-mtx-base} are squared and the expectation is taken. To find $\gamma(1)$, each side is multiplied by a $x(n-1)$ term \footnote{ A more general trick that is useful for finding the auto-correlation function for any distance can be done by multiplying eq~\ref{corr-mtx-base} by $x(n-k)$\cite{Cochrane1997a}. This gives the result $\gamma(k) = a_1\gamma(k-1) + a_2\gamma(k-2)$. However, it is more intutive and helpful to look at the two individual cases of $\gamma = 0,1$. }.
+Two tricks are now used to find $\gamma(0)$ and $\gamma(1)$. To find the variance, $\gamma(0)$, both sides of equation~\ref{corr-mtx-base} are squared and the expectation is taken. To find $\gamma(1)$, each side is multiplied by a $x(n-1)$ term \footnote{ A more general trick that is useful for finding the auto-correlation function for any distance can be done by multiplying eq~\ref{corr-mtx-base} by $x(n-k)$TODOcite{Cochrane1997a}. This gives the result $\gamma(k) = a_1\gamma(k-1) + a_2\gamma(k-2)$. However, it is more intutive and helpful to look at the two individual cases of $\gamma = 0,1$. }.
 
 \begin{align*}
 E\left[x^2(n)\right] &= \gamma(0) = E\left[  (a_1x(n-1) + a_2x(n-2) + \eta(n))^2  \right]\\
@@ -105,7 +105,7 @@ Over 1000 samples, the performance of the LMS-algorithm for parameter prediction
 		\resizebox{\textwidth}{!}{\input{matlabimages/3_1_b_100_iterations.tikz}}
 	\end{subfigure}
 	\caption{Squared Prediction Error of the LMS over 1 and 100 iterations.}
-	\label{fig:animals}
+	\label{fig:1-1-b}
 \end{figure}
 
 
@@ -116,11 +116,11 @@ As expected, the higher value of $\mu$ converges faster (as it's learning parame
 \subsubsection{Misadjustment Rate}
 
 
-As seen in figure TODO, it can be seen that the error term tends to fluctuate around the minimum sqare error ($\sigma_n^2$). However, there is an excess to this error, which is dubbed the excess mean square error (EMSE), defined as $EMSE = MSE - \sigma_2^2$. The \textbf{misadjustment rate} is simply the ratio between the EMSE and the minimum mean square error.
+As seen in figure~\ref{fig:1-1-b}, it can be seen that the error term tends to fluctuate around the minimum sqare error ($\sigma_n^2$). However, there is an excess to this error, which is dubbed the excess mean square error (EMSE), defined as $EMSE = MSE - \sigma_2^2$. The \textbf{misadjustment rate} is simply the ratio between the EMSE and the minimum mean square error.
 
-\begin{equation*}
+\begin{equation}
 \mathcal{M} = \frac{EMSE}{\sigma_n^2}
-\end{equation*}
+\end{equation}
 
 Looking over the estimated and the caluclated values for the misadjustment rate, it can be seen that they lie within the same order of magnitude. Furthermore, as the value of $\mu$ increases, as does the misadjustment rate. This comes from the fact that steady state fluctuations are more likely due to a larger step.
 
@@ -128,7 +128,7 @@ Looking over the estimated and the caluclated values for the misadjustment rate,
 	\centering
 	\begin{tabular}{ | c |  c | }
 		\hline
-		$\mathcal{M}$ & $\hat{\mathcal{M}}_{LMS} $ \\ \hline
+		$\mathcal{M}$ \textit{(calculated)} & $\hat{\mathcal{M}}_{LMS}$ \textit{(estimate)} \\ \hline
 		0.008395      & 0.00926                   \\ \hline
 		0.043028      & 0.04630                  \\ \hline
 	\end{tabular}
@@ -181,7 +181,13 @@ In this situation, the error function that is to be minimised is change to inclu
 Starting with;
 
 
-
+\begin{align*}
+\textbf{w}(n+1) &= \textbf{w}(n) - \mu\frac{\partial J_2}{\partial w}\\
+\textbf{w}(n+1) &= \textbf{w}(n) - \mu\left(\frac{\partial}{\partial w}\left[\frac{1}{2}e^2(n)\right] + \frac{\partial}{\partial w}\left[\frac{1}{2}\gamma||\textbf{w}(n)||^2_2\right]\right)\\
+\textbf{w}(n+1) &= \textbf{w}(n) - \mu\left(\left[-e(n)\textbf{x}(n)\right] + \left[\gamma\textbf{w}(n)\right]\right)\\
+\textbf{w}(n+1) &= \textbf{w}(n) - \mu\gamma\textbf{w}(n) + \mu e(n)\textbf{x}(n)\\
+\textbf{w}(n+1) &= (1-\mu\gamma)\textbf{w}(n) + \mu e(n)\textbf{x}(n)
+\end{align*}
 
 
 
@@ -211,10 +217,10 @@ Starting with;
 
 Though the values do approach the original filter parameters $[0.1, 0.8]$, there is a considerably larger bias when compared to the original LMS filter. In the normal LMS filter, a maximum error of around 4\% was seen - however, in the leaky LMS, both coefficients show a bias of around 10\% to 30\%.
 
-The large error factor is explained by the addition of the leak factor $-\mu\gamma\textbf{w}(n)$, which continually reduces the strength of the weights, even in steady state. In fact, it can be shown that the convergence of the weights is related to a corrupted version of the correlation matrix\cite{Kamenetsky2004}:
+The large error factor is explained by the addition of the leak factor $-\mu\gamma\textbf{w}(n)$, which continually reduces the strength of the weights, even in steady state. In fact, it can be shown that the convergence of the weights is related to a corrupted version of the correlation matrixTODOcite{Kamenetsky2004}:
 
 \begin{align*}
-\lim_{k \to \inf}E(\textbf{w}(k)) = (\textbf{R} + \gamma \textbf{I})^{-1}\textbf{p}
+\lim_{k \to \inf}E(\textbf{w}(n)) = (\textbf{R} + \gamma \textbf{I})^{-1}\textbf{p}
 \end{align*}
 
 where $\textbf{I}$ is the identity matrix and $\textbf{p}$ the cross correlation vector. The additional corruption of the auto-correlation matrix allows it to be inverted, but yields biased results.
@@ -242,22 +248,34 @@ where $\textbf{I}$ is the identity matrix and $\textbf{p}$ the cross correlation
 
 In the above section, a constant step size $\mu$ was selected. It should be noted that a higher step size will converge to the correct answer sooner, but can overshoot and cause instability when set too high. A lower one will converge more slowly, but will tend to be more stable once converegence has been achieved. As such, a desirable trait in the step size is to allow them to be adaptive; i.e. higher before convergence, and lower after convergence. 
 
-To this purpose, three algorithms are investiaged. Each algorithm adaptively updates the step, $\mu$, according to the following equations:
+To this purpose, three algorithms are investiaged. Each algorithm adaptively updates the step, $\mu(n)$, according to the following equations:
 
-%TODO: eqns
+\begin{align}
+\textbf{w}(n+1) &= \textbf{w}(n) + \mu(n)e(n)\textbf{x}(n)\\
+\text{with\ \ \ \ } \mu(n+1) &= \mu(n) + \rho e(n) \textbf{x}^T(n)\mathbf{\psi}(n)
+\end{align}
+
+with
+
+\begin{align*}
+\text{Benveniste:\ \ }      \mathbf{\psi}(n) &= [\textbf{I} - \mu(n-1)\textbf{x}(n-1)\textbf{x}^T(n-1)]\mathbf{\psi}(n-1)+e(n-1)x(n-1)\\
+\text{Ang \& Farhang:\ \ }  \mathbf{\psi}(n) &= \alpha\mathbf{\psi}(n-1) + e(n-1)\textbf{x}(n-1)\\
+\text{Matthews \& Xie:\ \ } \mathbf{\psi}(n) &= e(n-1)\textbf{x}(n-1)\\
+\end{align*}
+
 
 
 	
 \subsubsection{Implementation of Adaptive Step Sizes}
 
-\begin{figure}[h]
+\begin{figure}[H]
 	\centering 
-	\resizebox{\textwidth}{!}{\input{matlabimages/3_2_a_comparison.tikz}}
+	\resizebox{\textwidth}{!}{\input{matlabimages/3-2-a.tikz}}
 	\caption{Comparison of original LMS and adaprive step sized LMS using the Benveniste, Ang \& Farhang and Matthews \& Xie approaches.}
 	\label{fig:q3_2_a}
 \end{figure}
 
-
+As expected, the adaptive step size algorithms outperform the standard LMS. From figure~\ref{fig:q3_2_a}, it can be seen that the adaptive step sizes converge with a similar speed as the LMS algorithm with $\mu = 0.1$. However, though they converge at the same speed, all three adaptive step sizes outperform the LMS at steady state, with the error being significantly lower. 
 
 
 
@@ -265,24 +283,53 @@ To this purpose, three algorithms are investiaged. Each algorithm adaptively upd
 
 As the weight update for the LMS algorithm ($\Delta w$) is proportional to the magnitude of the input vector $\textbf{x}(n)$, it's not uncommon to normalise the step size. This is done by dividing $\Delta w$ by the magnitude of the input vector, summed with a regularisation factor $\epsilon$ to ensure stability of the algorithm even when the input is 0.
 
-\begin{equation*}
-\textbf{w}(n+1) = \textbf{w}(n) + \frac{\beta}{\epsilon + ||\textbf{x}(n)||^2}e(n)\textbf{x}(n)
-\end{equation*}
+\begin{equation}
+\textbf{w}(n+1) = \textbf{w}(n) + \frac{\beta}{\epsilon + ||\textbf{x}(n)||^2}e(n)\textbf{x}(n) \label{eq:3-2-2-nlms}
+\end{equation}
 
-By starting with an updated function that relied on the \textit{a posteriori} error, $e_p(n) = d(n) - \textbf{x}^T(n)\textbf{w}(n+1)$, it can be shown that this is an implementation of the NLMS algorithm.
+By starting with an updated function that relied on the \textit{a posteriori} error, such that $\textbf{w}(n+1) = \textbf{w}(n) + \mu e_p(n)\textbf{x}(n)$, with $e_p(n) = d(n) - \textbf{x}^T(n)\textbf{w}(n+1)$, it can be shown that this is an implementation of the NLMS algorithm.
 
-proof
+\begin{align*}
+e_p(n) &= d(n) - \textbf{x}^T\textbf{w}(n+1)\\
+e_p(n) &= d(n) - \textbf{x}^T(n)\left[\textbf{w}(n)+\mu e_p(n)\textbf{x}(n)\right]\\
+e_p(n) &= d(n) - \textbf{x}^T(n)\textbf{w}(n) - \mu e_p||\textbf{x}(n)||^2\\
+e_p(1+\mu||\textbf{x}(n)||^2)) &= d(n)-\textbf{x}^T(n)\textbf{w}(n) = e(n)\\
+e_p(n) &= \frac{e(n)}{1+\mu||\textbf{x}(n)||^2} = e(n)\frac{1+\mu||\textbf{x}(n)||^2-\mu||\textbf{x}(n)||^2}{1+\mu||\textbf{x}(n)||^2}\\
+e_p(n) &= e(n)\left[1 - \mu\frac{||\textbf{x}(n)||^2}{1+\mu||\textbf{x}(n)||^2}\right]\\
+\end{align*}
 
-with $\beta$ = 1 and $\epsilon$ = $\frac{1}{\mu}$.
+The update function with the \textit{a posteriori} error can now be shown to be equivalent to the NLMS.
+
+\begin{align*}
+\Delta \textbf{w}(n) &= \mu e(n)\left[1-\mu\frac{||\textbf{x}(n)||^2}{1+\mu||\textbf{x}(n)||^2}\right]\textbf{x}(n)\\
+&= e(n)\left[\mu-\mu^2\frac{||\textbf{x}(n)||^2}{\mu\left(\frac{1}{\mu}+||\textbf{x}(n)||^2\right)}\right]\textbf{x}(n)\\
+&= e(n)\left[\frac{1+\mu||\textbf{x}(n)||^2}{\frac{1}{\mu}+||\textbf{x}(n)||^2}-\frac{\mu||\textbf{x}(n)||^2}{\frac{1}{\mu}+||\textbf{x}(n)||^2}\right]\textbf{x}(n)\\
+&= e(n)\left[\frac{1}{\frac{1}{\mu}+||\textbf{x}(n)||^2}\right]\textbf{x}(n)\\
+\text{Thus,\ \ } \textbf{w}(n+1) &= \textbf{w}(n) + \frac{1}{\frac{1}{\mu}+||\textbf{x}(n)||^2}e(n)\textbf{x}(n)
+\end{align*}
+
+Which is the NLMS algorithm, with $\beta$ = 1 and $\epsilon$ = $\frac{1}{\mu}$.
 
 
 
 \subsubsection{Generalised Normalised Gradient Descent Algorithm (GNGD)}
 
+The GNGD algorithm is an adaptive version of the NLMS algorithm introduced above. One can take the original NLMS algorithm from \ref{eq:3-2-2-nlms} and make $\epsilon$ adaptive with
 
+\begin{equation}
+\epsilon(n+1) = \epsilon(n) - \rho\mu\frac{e(n)e(n-1)\textbf{x}^T(n)\textbf{x}(n-1)}{(\epsilon(n-1)+||\textbf{x}(n-1)||^2)^2}
+\end{equation}
 
+The resulting weights converge considerably faster than the benveniste algorithm (see fig~\ref{fig:q3_2_c})
 
+\begin{figure}[H]
+	\centering 
+	\resizebox{0.7\textwidth}{!}{\input{matlabimages/3-2-c.tikz}}
+	\caption{Comparison of GNGD and Benveniste algorithms.}
+	\label{fig:q3_2_c}
+\end{figure}
 
+%TODO: Complexity
 
 
 
@@ -320,6 +367,7 @@ In the above two sections, methods to analyse filter coefficients for unknown sy
 
 \subsubsection{Minimum delay for Adaptive Line Enhancer}
 
+%TODO
 
 \subsubsection{Effect of Filter Order and Delta Delay on MSPE for Adaptive Line Enhancer}
 
@@ -329,21 +377,55 @@ To investigate the performance of the Filter Order ($M$) and the delta delay ($\
 	MSPE = \frac{1}{N}\sum_{n=0}^{N-1}((x(n)-\hat{x}(n))^2)
 \end{equation}
 
-By running the ALE algorithm on the $s(n)$ for $M=[5,10,15,20]$ and $\Delta = [2,5,10,15,20,25]$, the effects of the algorithm parameters can be calculated. It's important to see %TODO
+By running the ALE algorithm on the $s(n)$ for $M=[5,10,15,20]$ and a range of $\Delta$ values, the effects of the algorithm parameters can be calculated. The results are shown in figure ~\ref{fig:q3_3_b}.
 
+\paragraph*{Effect of Time Shift}($\Delta$): Increasing the value of the time shift in the ALE algorithm increases the value of the MPSE. An increased value of $\Delta$ will delay the input, and therefore mean that the output $\hat{y}(n)$ is being prediced with older values of $\textbf{x}(n)$. %TODO
+
+\paragraph*{Effect of Model Order:} Altohugh generally the MPSE reduces with model order, the difference between a model oder 5 or anything above is relatively low (about 2\% difference for $\Delta$ = 2). This is an acceptable difference in error, and so a model order of 5 is perfect for this situation.
+
+\begin{figure}[H]
+	\centering 
+	\resizebox{0.7\textwidth}{!}{\input{matlabimages/3-3-b.tikz}}
+	\caption{Comparison of GNGD and Benveniste algorithms.}
+	\label{fig:q3_3_b}
+\end{figure}
 
 
 \subsubsection{Comparison of Adaptive Line Enhancer and Adaptice Noise Cancellation methods}
 
-A second tpe of noise reduction can be acccomplished with the Adpative Noise Cancellation setup. Here, rather than estimating the original signal, an estimate of the noise is made using a predicion error. The predicion error is a secondary noise input, which is in some way correlated to the noise that is corrupting the original signal.
+A second tpe of noise reduction can be acccomplished with the Adpative Noise Cancellation setup. Here, rather than estimating the original signal, an estimate of the noise is made using a predicion error. The predicion error is a secondary noise input, which is in some way correlated to the noise that is corrupting the original signal. For example, a phone might have two microphones - one to caputre the voice, and a second to caputre background noise.
 
-To compare the ALE and ANC methods, a plot of the output and the error are generated for a range of values. %TODO it can be seen that ...
+To compare the ALE and ANC methods, a plot of the output and the error are generated for a range of values. Figure~\ref{fig:q3_3_c} shows the ALE boasting a significantly lower MSPE, with a steady state error of $-14dB$.
 
+\begin{figure}[H]
+	\centering 
+	\resizebox{0.7\textwidth}{!}{\input{matlabimages/3-3-c.tikz}}
+	\caption{Comparison of ALE and ACE for $\mu = 0.01$ and $M = 5$ for both cases. The minimum value of 2 for $\Delta$ in the ALE is used. Results are averaged over 100 iterations}
+	\label{fig:q3_3_c}
+\end{figure}
 
 
 \subsubsection{De-Noising a single channel EEG}
 
-The methods descirbed above can be applied to the EEG Dataset introduced in Section 2 to remove the 50Hz hum. The ANC configuration is used, with a 50Hz Signal corrupted by WGN used as the input to the linear predictor. Tuning the algorithm parameters such as to reduce the effects to other frequency bands is accomplished through iteration.
+The methods descirbed above can be applied to the EEG Dataset introduced in Section 2 to remove the 50Hz hum. The ANC configuration is used, with a 50Hz Signal corrupted by WGN used as the input to the linear predictor. In this case, a 50Hz sinusoid with amplitude 2 is corrupted by WGN of $\mathcal{N}(0,0.25)$. The algorithm parameters have been tuned to limit the effect of the noise reduction in other frequency bands.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.66\textwidth]{images/3-3-d-1.pdf}
+	\caption{Comparison of POz data with 50Hz humm removed (left) and original (right).}
+	\label{fig:3-3-d-1}
+\end{figure}
+
+It can be seen from figure~\ref{fig:3-3-d-1} that the 50Hz hum has been completely removed, with no visible effect to other frequency bands. To investiagte the effect on other frequency bands, the difference between the original signal and the noise removed signal are shown on a spectrogram. Figure~\ref{fig:3-3-d-2} shows that though the noise at 50Hz is the most affected, there is a very small effect of the signal at 100Hz.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.4\textwidth]{images/3-3-d-2.pdf}
+	\caption{Spectrogram of difference between original and noise removed graph.}
+	\label{fig:3-3-d-2}
+\end{figure}
+
+
 
 %TODO: write this up a little more nicely.
 

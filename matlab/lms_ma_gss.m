@@ -12,12 +12,12 @@ function [ weights, error, pred_out ] = lms_ma_gss( in, out, order, gassType, ro
     weights  = zeros(N,order);
     
     for m=order+2:N
-        xnow = in(m-1:-1:m-order);
-        xprev= in(m-2:-1:m-order-1);
+        xnow = in(m:-1:m-order+1);
+        xprev= in(m-1:-1:m-order);
         
-        pred_out(m) = weights(m,:) * in(m-1:-1:m-order)';
+        pred_out(m) = weights(m,:) * xnow';
         error(m)    = out(m) - pred_out(m);
-        weights(m+1,:) = weights(m,:) + mu(m)*error(m)*in(m-1:-1:m-order);
+        weights(m+1,:) = weights(m,:) + mu(m)*error(m)*xnow;
         
         switch gassType
             case 1
