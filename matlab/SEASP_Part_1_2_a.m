@@ -1,14 +1,16 @@
 clear all
 close all
 
-x = p1_singen(24, 1000, 100);
+M = 128;
+L = 256;
 
-fft100  = fft(x,  100);
-fft1000 = fft(x, 1000);
+x = zeros(L,1);
+for l=1:M
+    x(l) = p1_rk(l-1,M);
+end
+for l=(L-M+1):L
+    x(l) = p1_rk(l-L-1,M);
+end
 
-figure;
-stem([-500:10:490], abs(fftshift(fft100)));
-title('DFT(100) of 24Hz');
-xlabel('Frequency (Hz)');
-ylabel('Magnitude');
-xlim([-150 150])
+
+plot(imag(fft(x)))
