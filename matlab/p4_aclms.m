@@ -12,13 +12,10 @@ function [ weights, weights2, error, pred_out ] = p4_aclms( in, out, order, mu )
     weights2  = zeros(order,N);
     
     for m=order+1:N
-        pred_out(m) = (weights(:,m)') * in(m-1:-1:m-order) + (weights2(:,m)') * conj(in(m-1:-1:m-order));
+        pred_out(m) = (weights(:,m)') * in(m:-1:m-order+1) + (weights2(:,m)') * conj(in(m:-1:m-order+1));
         error(m)    = out(m) - pred_out(m);
-        weights(:,m+1) = weights(:,m) + (mu*conj(error(m))*in(m-1:-1:m-order));
-        weights2(:,m+1) = weights2(:,m) + (mu*conj(error(m))*conj(in(m-1:-1:m-order)));
+        weights(:,m+1) = weights(:,m) + (mu*conj(error(m))*in(m:-1:m-order+1));
+        weights2(:,m+1) = weights2(:,m) + (mu*conj(error(m))*conj(in(m:-1:m-order+1)));
     end
-    
-    weights = conj(weights);
-    weights2 = conj(weights2);
 end
 

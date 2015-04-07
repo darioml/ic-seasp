@@ -21,7 +21,7 @@ e(n) &= y(n) - \hat{y}(n)\\
 \textbf{g}(n+1) &= \textbf{g}(n) + \mu e^*(n) \textbf{x}^*(n)
 \end{align*}
 
-The effectiveness of the CLMS and ALMS is tested by considering the following WLMA(1) input. A model order of 1 is passed to both the CLMS and ACLMS algorithms, with the results show in figure %TODO
+The effectiveness of the CLMS and ALMS is tested by considering the following WLMA(1) input. A model order of 1 is passed to both the CLMS and ACLMS algorithms, with the results for model error (learning curve) show in figure~\ref{fig:q4_1_a}
 
 \begin{equation}
 y(n) = x(n) + b_1x(n-1) + b_2x(n=1)\ \ \ \ \ \ x \sim \mathcal{N}(0,1)
@@ -29,21 +29,38 @@ y(n) = x(n) + b_1x(n-1) + b_2x(n=1)\ \ \ \ \ \ x \sim \mathcal{N}(0,1)
 
 where $x$ is complex, circular WGN, $b_1 = 1.5+1j$, $b_2  = 2.5-0.5j$.
 
-%TODO Figure
+\begin{figure}[H]
+	\centering 
+	\resizebox{0.9\textwidth}{!}{\input{matlabimages/4-1-a.tikz}}
+	\caption{ACLMS and CLMS learning curves for WLMA(1)}
+	\label{fig:q4_1_a}
+\end{figure}
 
-As expected, the CLMS only captures part of the relationship between input and output, and only the first variable, $b_1$ is captured. When turning to the ACLM, both dependencies are captured.
+As the CLMS cannot properly capture the underlying data, the error at steady state remains at around $10dB$. However, the ACLMS is able to perfectly match the system, and the error at steady state tends towards 0; which in $dB$ tends towards $-\infty$.
 
 \subsubsection{Bivariate Wind Data}
 
 As well as estimating filter coefficients for direct WLMA processes, the CLMS and ACLMS algorithms can be used to predict real life data. Three sets of wind data (One for each low, medium and high wind strenght) are passed through each algorithm to attempt to model and predict future wind patterns.
 
-%TODO Scatter plots
 
-From the scatter plots of the wind data, it can be extrapolated that the CLMS is sufficient for low wind data, as it appears to be more circular. However, medium and high wind strength appears less circular, indicating that the CLMS might not be able to fully follow the model. 
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.8\textwidth]{images/4-1-b-1.pdf}
+	\caption{Scatter Plots for Bivariate wind data of low (left), medium (center) and high (right) wind regimes}
+	\label{fig:q4_1_b}
+\end{figure}
 
-To investiage the performance of the CLMS and the ACLMS algorithms for the wind data, the steady state error averaged over 500 iterations is captured for a number of orders and learning coefficient values. The results show that %TODO
 
+From the scatter plots of the wind data (Figure \ref{fig:q4_1_b}), it can be extrapolated that the CLMS is sufficient for low wind data, as it appears to be more circular. However, medium and high wind strength appears less circular, indicating that the CLMS might not be able to fully follow the model. 
 
+To investiage the performance of the CLMS and the ACLMS algorithms for the wind data, the steady state error averaged over 100 iterations is captured for a number of orders and learning coefficient values. From the results in fig~\ref{fig:q4_1_b_2}, it can be said that the ACLMS of order 3 is best for the low wind data, 
+
+\begin{figure}[H]
+	\centering 
+	\resizebox{0.9\textwidth}{!}{\input{matlabimages/4-1-b-2.tikz}}
+	\caption{Model Prediction for the Bivariate wind data.}
+	\label{fig:q4_1_b_2}
+\end{figure}
 
 
 
@@ -66,9 +83,14 @@ v(n) = \sqrt{\frac{3}{2}} V e^{j(2 \pi \frac{f_0}{f_s}n + \phi)} \label{eq-4-1-c
 \end{equation}
 
 
-%TODO: add the graphs here
+\begin{figure}[H]
+	\centering 
+	\resizebox{0.4\textwidth}{!}{\input{matlabimages/4-1-c.tikz}}
+	\caption{Circularity plot for a balanced and an unbalanced power system}
+	\label{fig:q4_1_c}
+\end{figure}
 
-When plotting the circularity diagrams of both a balanced and unbalanced system, it can be seen that only a balanced system will have %TODO: what happens with phase 
+When plotting the circularity diagrams of both a balanced and unbalanced system, it can be seen that only a balanced system will have perfectly round circle, whereas an unbalanced one will not. This property can be used to identify a fault in a given power system, as a non-perfect circle implies an unbalanced power system, which implies a fault.
 
 
 
@@ -145,8 +167,16 @@ f_0 &= \frac{f_s}{2\pi}arctan(\frac{\sqrt{ \Im^2(h^*(n)) + |g^*(n)|^2 }}{\Re(h^*
 \subsubsection{Estimation of Clarke Voltage using CLMS and ACLMS}
 
 Using the expressions from the above proof, the CLMS and ACLMS algorithms are used to calculate values of the frequency for balanced and unbalanced systems using the the weight vectors $\textbf{h}^*(n)$ and $\textbf{g}^*(n)$. 
-%TODO: Graphs
-%TODO: Clms doesn't give the expected freequency - this is why
+
+\begin{figure}[H]
+	\centering 
+	\resizebox{0.8\textwidth}{!}{\input{matlabimages/4-1-e.tikz}}
+	\caption{Circularity plot for a balanced (left) and an unbalanced (right) power system}
+	\label{fig:q4_1_e}
+\end{figure}
+
+It's interesting to note that for both a balanced and an unbalanced power system, both the CLMS and the ACLMS converge to the correct value of $f_0$.
+
 
 \subsection{Adaptive AR Model Based Time-Frequency Estimation}
 
