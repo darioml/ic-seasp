@@ -26,22 +26,51 @@ Turning to matlab, the results found above can be verified. By using the DFT wit
 	\label{fig:q1_1_b}
 \end{figure}
 
-The DFT will always window the input, but with a of 100, the lobes are invisible as the frequency resolution is not high enouhg. By increasing the DFT-side of 1000, the lobes that arise from the windowing are perfectly visible. However, we are able to pefectly see the two peaks at $20Hz$ with a magnitude of $50$.
+Figure~\ref{fig:q1_1_b} clearly shows the effect of windowing on an otherwise perfect sinusoid. The left image shows two clean peaks at $20$ and $-20$ Hz, as expected. When increasing the FFT size for the same signal of 100 samples, the original signal is zero padded to the right to match the fft-size. Therefore, when taking a 1000-point FFT, the sinusoid is zero padded with 900 zeros. Conceptually, this is the same effect of the infinite sinuoid being windowed by a rectangular window over the first 100 samples.
 
-It's imporant to note that the DFT will only give a single spectrum of $[-\pi,\pi)$ (or $[0, 2\pi)$ without {\tt fftshift}). However, the true DFT will be repeated every multiple of $2\pi$, such that $X(w) = X(w+2\pi)$.
+\paragraph{As the input for the 1000-point FFT is windowed,} a number of lobes appear in the frequency spectra. This comes from two fact; 
+\begin{enumerate}
+	\item $rect(t) \Leftrightarrow sinc(\pi f)$, which will generate a main lobe and a number of side lobes when looking at the magnitude spectrum.
+	\item Multiplication in the time domain is convolution in the frequency domain, therefore a sinc will appear centered at $\pm 20Hz$ when looking at the magnitude spectrum.
+\end{enumerate}
+
+It's imporant to note that the {\tt fft} function will only give a result over a single spectrum of $[-\pi,\pi)$ (or $[0, 2\pi)$ without {\tt fftshift}). However, the true DFT will be repeated every multiple of $2\pi$, such that $X(w) = X(w+2\pi)$.
 
 \subsubsection{Incoherent Sampling}
 
-To illustrate some of the limitations of the DFT spectrum, consider a 24Hz signal sampled at 1000Hz. If the 100-point DFT is taken, the frequency resolution will only be 10Hz, meaning that the peak of the lobe at 24Hz will not be captured. 
+Zero padding as in 1.1(b) is not the only scenario where the DFT of a single frequency wave turns into a fuller spectrum. Any discontinuity in the time domain will result in a fuller frequency response. This is the same effect as the windowing seen above. 
+
+\paragraph{Discontinuous signals} will display similar properties as zero-padded signals. To overcome this, careful consideration of the time chunk passed through the FFT should be made. In reality, this is rarely possible, so a range of other windows are considered to smoothen out discontinuities. These are discussed in detail in this section.
+
+Further to the discontinuity, which will explain why a full spectrum is to be seen in figure~\ref{fig:q1_1_c} as opposed to two dirac functions, taking the FFT over 100 points makes it hard to see one, single, clear peak. As the FFT with N points will have a frequency resolution of $f_s/N$, in the case where $N=100$, the resolution is 10Hz. Therefore, at $24Hz$ where a dirac is expected, there is no sample.
+
+\paragraph{It is therefore important to ensure the fft size} gives the most appropriate frequency resolution required in each case. There is generally a tradeoff between the computational complexity of increasing the FFT size and the resulting frequency resolution, and so striking the correct balance is important.
 
 \begin{figure}[H]
 	\centering 
-	\resizebox{0.8\textwidth}{!}{\input{matlabimages/1-1-c.tikz}}
+	\resizebox{0.7\textwidth}{!}{\input{matlabimages/1-1-c.tikz}}
 	\caption{100 point DFT of a 24Hz wave}
 	\label{fig:q1_1_c}
 \end{figure}
 
-%TODO: Incoherent Sampling
+
+\paragraph{To solve the incoherent sampling problem,} %TODO
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
