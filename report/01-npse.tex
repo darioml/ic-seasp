@@ -110,7 +110,131 @@ This vector can be calculated by the value {\tt linspace(-$\pi$, $\pi$, L)} wher
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
 \subsection{Resolution and Leakage of Periodogram-based Methods}
+
+
+\subsubsection{Bartlett Window}
+
+\begin{figure}[H]
+	\centering 
+	\resizebox{\textwidth}{!}{\input{matlabimages/1-3-a.tikz}}
+	\caption{Linear and dB scale plots of a Bartlett window}
+	\label{fig:q1_3_a}
+\end{figure}
+
+Using the inbuilt {\tt bartlett(n)} function, the {\tt fft} of the bartlett window with a number of different sizes are investigated to understand the properties of the window (see figure~\ref{fig:q1_3_a}). Specifically of interest is the $3dB$ width and the peaks (in dB) of the first sidelobe as functions of N.  
+
+%TODO: Width and lobes as function of N
+
+
+
+
+\subsubsection{Investigating window size for frequency estimation ($\alpha$)}
+
+The ability to differentiate between two frequencies in the frequency domain is fundamental to signal processing. Window size plays a large role in this, and as seen above, the length of the window defines the ability to distinguish between signals in the frequency space.
+
+To investigate this, the signal 
+
+\begin{equation}
+x(n) = a_1sin(f_02\pi n + \phi_1) + a_2sin((f_0+\alpha/N)2\pi n + \phi_2) + w(n)
+\end{equation}
+
+where w(n) is defined by $\mathcal{M}(0, \sigma^2)$ is considered. A number of alpha values are used, and resulting periodogram is plotted using the bartlett window, where $N=256$ in both cases. Figure~\ref{fig:q1_3_b} shows that from around an $\alpha$ value of 4, two distinct peaks can be seen in the periodogram, allowing for the two frequencies to be distinguished.
+
+%TODO comment on this number
+
+\begin{figure}[H]
+	\centering 
+	\resizebox{\textwidth}{!}{\input{matlabimages/1-3-b.tikz}}
+	\caption{Effects of $\alpha$ on frequency resolution in the time domain.}
+	\label{fig:q1_3_b}
+\end{figure}
+
+
+
+
+\subsubsection{Hamming-windowed periodogram}
+
+As every window has different properties, it's important to realise that each window has it's own effect on the periodogram. The Hamming window has wider lobes when compared to the bartlett window. As the lobes are more spread out, the value of $\alpha$ required to distinguish frequencies is slightly higher. To achieve a similar frequency gap as shown in the bartlett window above, and $\alpha$ fo 4 should be chose.  %TODO: What frequency difference does this mean?
+
+\begin{figure}[H]
+	\centering 
+	\resizebox{\textwidth}{!}{\input{matlabimages/1-3-c.tikz}}
+	\caption{Effects of $\alpha$ on frequency resolution in the time domain when using the hamming window.}
+	\label{fig:q1_3_c}
+\end{figure}
+
+
+\subsubsection{Effect of Lobe Leakage on the periodogram}
+
+As well as the main lobes interfering with one another, as shown in section 1.3.2 and 1.3.3, the sidelobes can have an affect on frequency detection in the case where the amplitudes of the signals vary greatly. This is as the main lobe of a smaller amplitude signal might become hidden behind a side lobe of a large amplitude signal.
+
+\begin{figure}[H]
+	\centering 
+	\resizebox{\textwidth}{!}{\input{matlabimages/1-3-d.tikz}}
+	\caption{Effect of window leakage for a fixed alpha ($\alpha=4$) but varying signal amplitudes.}
+	\label{fig:q1_3_d-4}
+\end{figure}
+
+By ranging over a number of magnitude for the signal $a_2$ (\textit{increasingly smaller}), this effect can be investigated. Here, the rectangular window is used. Figure~\ref{fig:q1_3_d-4} shows how, as the amplitude difference increases, the ability to distinguish frequencies diminishes.
+
+
+\begin{figure}[H]
+	\centering 
+	\resizebox{\textwidth}{!}{\input{matlabimages/1-3-d-alpha-12.tikz}}
+	\caption{Effect of window leakage for a fixed alpha ($\alpha=12$) but varying signal amplitudes.}
+	\label{fig:q1_3_d-12}
+\end{figure}
+
+Comparing figure~\ref{fig:q1_3_d-4} with figure~\ref{fig:q1_3_d-12}, it can be seen that changing the frequency gap between the two sinusoids ($\alpha$) has only a limited effect on the lobe leakage effect. %TODO do more here.
+
+
+
+\subsubsection{Fourier tranform of the Bartlett window}
+
+%TODO: I don't understand this
+
+
+
+\subsubsection{Chebyshev window and fixed sidelobe sizes}
+
+In certain situations, such as when it is known that there will be large amplitude differences in input signals, it can be useful to decide the sidelobe level. A such filter is the Chebyshev filter, which can be instanciated in Matlab with {\tt chebyshev(N,U)}, with N the window size and U the sidelobe attenuation in decibels.
+
+To explore the effect of the Chebyshev filter, two realisations of $x(n)$ with $a_1 =1$ and $a_2=[0.1, 0.0001]$, and the results in fig~\ref{fig:q1_3_f} show how the Chebyshev filter can distinguish two peaks as the value of $U$ increases.
+
+\begin{figure}[H]
+	\centering 
+	\resizebox{\textwidth}{!}{\input{matlabimages/1-3-f.tikz}}
+	\caption{Effect of the Chebyshev filter with different input signals and sidelobe attenuation. The difference of the two coefficients $a_1$ and $a_2$ is order 10, and 1000 for the second row.}
+	\label{fig:q1_3_f}
+\end{figure}
+
+\paragraph{Reduced sidelobes do not come without a cost.} Note how the 3 dB point of the chebyshev filter increases as a function of N. Although the ability to differentiate signals with vastly different amplitude is improved, the tradeoff here lies between frequency or amplitude resolution.
+
+
+The experiment run in section (d) is repeated with the chebyshev filters with a fixed sidelobe attenuation size to maxise the differentiation. As there is now a tradeoff between freqency and amplitude resolution, the value of $\alpha$ plays a crucial role. It is shown that for $\alpha = 4$, the chebyshev window is no better than the rectangular windows. However, when the frequency gap is increased, the chebyshev window is able to find two distinct peaks even at $a_1:a_2 = 1,000,000:1$.
+
+Note how we are still able to identify both signals with $a_2:a_1$ at %TODO fill this and add something about alpha
+
+
+
+
+
+
+
+
 
 
 
@@ -123,6 +247,18 @@ This vector can be calculated by the value {\tt linspace(-$\pi$, $\pi$, L)} wher
 
 
 \subsection{Periodogram-based Methods Applied to Real-World Data}
+
+
+
+
+\subsubsection{Sunspot Time Series}
+
+
+\subsubsection{Electroencephalogram (EEG)}
+
+
+
+
 
 
 
