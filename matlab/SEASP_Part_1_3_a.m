@@ -15,7 +15,7 @@ for n=20:99
     
     x = findpeaks(fftshifted);
     if (length(x) > 3)
-        sidelobe(n)= 10*log10(x((length(x)-1)/2));
+        sidelobe(n)= 20*log10(x((length(x)-1)/2));
     end
 end
 
@@ -50,7 +50,7 @@ for n=1:length(b_sizes)
     cleanfigure;
     
     subplot(2, length(b_sizes), length(b_sizes) + n);
-    plot(linspace(-1,1,fftsize), 10*log10( fftshifted+eps )   );
+    plot(linspace(-1,1,fftsize), 20*log10( fftshifted+eps )   );
     title(sprintf('Barlett window, N=%i', b_sizes(n)));
     ylabel('$W_B(\omega)$ (dB)')
     xlabel('Frequency ($\pi\omega$)')
