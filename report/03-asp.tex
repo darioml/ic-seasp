@@ -82,7 +82,7 @@ Which results in $\gamma(0) = 25/27$ and $\gamma(1) = 25/54$, such that
 
 \paragraph{To find the convergence in the mean,} a maximum value for $\mu$ is estimated with $2/(trace(\textbf{R}))$, such that $0 \leq \mu \leq \frac{2}{trace(\textbf{R})}$. This gives $0 \leq \mu \leq \frac{729}{625} = 1.1664$.
 
-A more precise method to do this is to look at the eigenvalues of the auto-correlation matrix. In our case, these are $\mathbf{ \lambda } = [0.4630, 1.3889] ^ T $, which leads to $0 \leq \mu \leq \frac{2}{\lambda_{max}} = 1.43999$ with the maximum convergence speed\footnote{Speed here generally does not make it a good choice - a high $\mu$ leads to instability and large fluctuations.}.  at $\mu = \frac{2}{\lambda_{max} + \lambda_{min}} = 1.08$
+A more precise method to do this is to look at the eigenvalues of the auto-correlation matrix. This is however computationally expensive, and generally not favourable (especially for high-order systems). In our case, these are $\mathbf{ \lambda } = [0.4630, 1.3889] ^ T $, which leads to $0 \leq \mu \leq \frac{2}{\lambda_{max}} = 1.43999$ with the maximum convergence speed\footnote{Speed here generally does not make it a good choice - a high $\mu$ leads to instability and large fluctuations.}.  at $\mu = \frac{2}{\lambda_{max} + \lambda_{min}} = 1.08$
 
 
 
@@ -329,7 +329,9 @@ The resulting weights converge considerably faster than the benveniste algorithm
 	\label{fig:q3_2_c}
 \end{figure}
 
-%TODO: Complexity
+\paragraph{The complexity difference between the GNGD and Benveniste methods} is done analytically by looking at the complexity for each iteration within the LMS algorithm. It can be noted that \textbf{neither} the GNGD or the Benveniste algorithm have any matrix multiplications. Instead, all multiplications are either matrix-by-vector ($\mathcal{O}(m*m*1)$) or vector-by-vector ($\mathcal{O}(m*1*m)$) multiplications. As these are all of order $\mathcal{O}(m^2)$, both algorithms are $\mathcal{O}(m^2)$.
+
+However, as the GNGD algorithm converges considerably faster (\textit{half as many iterations for the experiment in figure~\ref{fig:q3_2_c}}), it overall is a more suitable algorithm for adaptive step sizing.
 
 
 
@@ -367,7 +369,31 @@ In the above two sections, methods to analyse filter coefficients for unknown sy
 
 \subsubsection{Minimum delay for Adaptive Line Enhancer}
 
-%TODO
+Starting from the expectation of the mean square error ($s[n]-\hat{x}[n] = x(n) + \eta(n) - \hat{x}[n]$)
+
+\begin{align*}
+\mathbb{E}\{(s(n)-\hat{x}(n))^2\} &= \mathbb{E}\{(x(n)+\eta(n)-\hat{x}(n))^2\}\\
+&= \mathbb{E}\{\eta(n)^2\}  + \mathbb{E}\{(x(n)-\hat{x}(n))^2\} + 2\mathbb{E}\{(x(n)-\hat{x}(n))\eta(n)\}
+\end{align*}
+
+From observatiom, the only term that can be optimised by changing $\Delta$ is $\mathbb{E}\{(x(n)-\hat{x}(n))\eta(n)\}$. Furtheremore, as $\mathbb{E}\{x(n)\eta(n)\}$ is fixed, the problem can be re-phrased into focusing purely on $\mathbb{E}\{\hat{x}(n)\eta(n)\}$.
+
+\begin{align*}
+\mathbb{E}\left\{\hat{x}(n)\eta(n)\right\} &= \mathbb{E}\left\{ \left[\mathbf{w}^T\mathbf{u}(n)\right]\left](v(n)+0.5v(n-2)\right]\right\} \\
+&=\mathbb{E}\left\{\left[\sum_{i=0}^{M}w_k s(n-\Delta-i)\right]\left[v(n)+0.5v(n-2)\right]\right\}\\
+&=\mathbb{E}\left\{\left[\sum_{i=0}^{M}w_k (x(n-\Delta-i)+\eta(n-\Delta-i))\right]\left[v(n)+0.5v(n-2)\right]\right\} \\
+&=\mathbb{E}\left\{\left[\sum_{i=0}^{M}w_k (x(n-\Delta-i)+v(n-\Delta-i)+0.5v(n-\Delta-i-2))\right]\left[v(n)+0.5v(n-2)\right]\right\} \\
+\end{align*}
+
+From here it is intuitive to see that $\Delta$ must be larger than 2 ($\Delta \ge 3$). This comes from the fact that if the above term were to be exanded, there would be terms that calculate the correlation between $v(n)$ and $v(n-2+\Delta)$. These will be correlated unless $\Delta$ is larger than 2. With $\Delta$ set to 3, the correlation between of the noise will have no influence on the expectation of the mean square error.
+
+
+\begin{figure}[H]
+	\centering 
+	\resizebox{0.9\textwidth}{!}{\input{matlabimages/3-3-a.tikz}}
+	\caption{Effect of $\Delta$ on the ALE algorithm.}
+	\label{fig:q3_3_a}
+\end{figure}
 
 \subsubsection{Effect of Filter Order and Delta Delay on MSPE for Adaptive Line Enhancer}
 
@@ -381,7 +407,7 @@ By running the ALE algorithm on the $s(n)$ for $M=[5,10,15,20]$ and a range of $
 
 \paragraph*{Effect of Time Shift}($\Delta$): Increasing the value of the time shift in the ALE algorithm increases the value of the MPSE. An increased value of $\Delta$ will delay the input, and therefore mean that the output $\hat{y}(n)$ is being prediced with older values of $\textbf{x}(n)$. %TODO
 
-\paragraph*{Effect of Model Order:} Altohugh generally the MPSE reduces with model order, the difference between a model oder 5 or anything above is relatively low (about 2\% difference for $\Delta$ = 2). This is an acceptable difference in error, and so a model order of 5 is perfect for this situation.
+\paragraph*{Effect of Model Order:} Although generally the MPSE reduces with model order, the difference between a model oder 5 or anything above is relatively low (about 2\% difference for $\Delta$ = 3). This is an acceptable difference in error, and so a model order of 5 is perfect for this situation.
 
 \begin{figure}[H]
 	\centering 

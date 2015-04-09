@@ -4,7 +4,7 @@ function [ weights, error, pred_out ] = lms_ma_gngd( in, out, order, mu, ro )
 
     N = length(out); % number of iterations
     
-    error    = zeros(1,N); %initially, the error is equal to the output!
+    error    = zeros(1,N);
     pred_out = zeros(1,N);
     epsilon  = ones(1,N);
     

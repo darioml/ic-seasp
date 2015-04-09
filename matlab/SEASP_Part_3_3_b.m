@@ -1,8 +1,8 @@
 clear all
 close all
 
-M_VALS = [2 5 10 15 20];
-D_VALS = [2 3 4 5 7 8 9 10 12 13 15 17 20 22 25];
+M_VALS = [2 3 4 5 10 15 20];
+D_VALS = [3 4 5 7 8 9 10 12 13 15 17 20 22 25];
 
 %% Generate graph - I'm going to for each M, compare values of delta
 SAMPLES = 1000;
@@ -36,7 +36,7 @@ MSPE = zeros(length(M_VALS), length(D_VALS));
 for m_local_i = 1:length(M_VALS)
     for d_local_i = 1:length(D_VALS)
         outputs = zeros(100,1000);
-        for i=1:500
+        for i=1:100
             n = filter([1 0 0.5],1,randn([SAMPLES 1]));
             s = x+n;
             [~,~,outputs(i,:)] = ale_lms( s, 0.01, M_VALS(m_local_i), D_VALS(d_local_i));
@@ -46,6 +46,8 @@ for m_local_i = 1:length(M_VALS)
 end
 
 plot(D_VALS, MSPE', '*-')
-legend('M = 2','M = 5','M = 10','M = 15','M = 20');
+legend('M = 2','M = 3','M = 4','M = 5','M = 10','M = 15','M = 20');
 
-
+title('MPSE for ALE');
+ylabel('MPSE')
+xlabel('$\Delta$')

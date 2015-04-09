@@ -64,7 +64,7 @@ plot(imag(b'));
 %% let's put the errors on one graph..
 
 N_iter = 100;
-LENGTH = 1000;
+LENGTH = 10000;
 
 error_clms = zeros(N_iter, LENGTH);
 error_aclms = zeros(N_iter, LENGTH);

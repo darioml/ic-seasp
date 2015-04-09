@@ -10,7 +10,7 @@ x_n = @(a_1, a_2, phi_1, phi_2, sigma2, alpha, N) a_1*sin(f_0*2*pi*(0:(N-1)) + p
 
 N = 256;
 figure;
-vals = [2 4 6 7];
+vals = [1 3 4 7];
 for alpha=1:length(vals)
     subplot(1,4,alpha);
     signal = x_n(1, 1, 0, 0, 0, vals(alpha), N) .* bartlett(N)';

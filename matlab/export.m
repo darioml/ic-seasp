@@ -1,9 +1,10 @@
 function [] = export(inputName)
-    set(gca,'TickDir','out');
-    set(gca,'Box','off');
     set(gcf,'color','w');
 
-    
+    axesHandles = get(gcf,'children');
+    axesHandles = findall(0,'type','axes');
+    set(axesHandles,'TickDir','out');
+    set(axesHandles,'Box','off');
     cleanfigure;
     
     

@@ -18,5 +18,18 @@ end
 medianH = 50*median(median(H));
 H(H>medianH) = medianH;
 
-surf(1:LENGTH, 1:1024, H, 'LineStyle','none');
-view(2);
+figure
+    surf(1:LENGTH, (1:1024)/1024, H, 'LineStyle','none');
+    view(2);
+    ylabel('Noramlised Frequency ($\pi rads$)')
+    xlabel('Sample Number (N)')
+    title('LMS Spectrogram')
+    axis tight
+
+
+figure
+    plot(real(weights)); hold all; plot(imag(weights)); 
+    title('LMS Weights')
+    xlabel('Sample Number (N)')
+    ylabel('Weight')
+    legend('$\Re(w)$', '$\Im(w)$');

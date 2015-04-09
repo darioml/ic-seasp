@@ -16,6 +16,11 @@
 \usepackage{pgfplots}
 \usetikzlibrary{plotmarks}
 \usepackage[makeroom]{cancel}
+\usepackage{chngcntr}
+\usepackage[font={it}]{caption}
+
+\usepackage{amsfonts}
+\renewcommand{\thesubsubsection}{\thesubsection\  (\alph{subsubsection})}
 
 \newcommand\numberthis{\addtocounter{equation}{1}\tag{\theequation}}
 \newcommand{\HRule}{\rule{\linewidth}{0.5mm}}

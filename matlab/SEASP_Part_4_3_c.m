@@ -20,5 +20,6 @@ end
 
 [ weights, error, pred_out ] = p4_dft_clms( input );
 
-H = abs(weights);
+H = abs(weights).^2;
 surf(H, 'LineStyle','none');
+view(2)

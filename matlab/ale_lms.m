@@ -9,6 +9,7 @@ function [ weights, error, pred_out ] = ale_lms( signal, mu, order, delta )
     error    = zeros(1, N);
     
     for n=delta+order:N
+        
         u            = signal(n-delta:-1:n-delta-order+1);
         
         pred_out(n)  = weights(:,n)'*u;

@@ -184,8 +184,32 @@ In section 2.2, the AR spectrum of a stationary signal was produced. However, th
 
 \subsubsection{Filter Coefficients for AR(1)}
 
+
+\begin{figure}[H]
+	\centering 
+	\resizebox{0.9\textwidth}{!}{\input{matlabimages/4-2-a.tikz}}
+	\caption{}
+	\label{fig:q4_2_a}
+\end{figure}
+
+
 \subsubsection{Spectrogram using the LMS Algorithm}
 
+
+\begin{figure}[H]
+	\centering
+	\begin{subfigure}[b]{0.9\textwidth}
+		\includegraphics[width=\textwidth]{images/4-2-b-1.pdf}
+		\caption{}
+	\end{subfigure}%
+	
+	\begin{subfigure}[b]{0.9\textwidth}
+		\resizebox{\textwidth}{!}{\input{matlabimages/4-2-b-2.tikz}}
+		\caption{}
+	\end{subfigure}
+	\caption{}
+	\label{}
+\end{figure}
 
 
 
@@ -219,6 +243,29 @@ e(n) &= y(n) - \hat{y}(n) \numberthis \label{eq-4-3-dft-clms}\\
 As the LMS algorithm now searches for weights that will linearly combine harmonic frequecies $\textbf{x}(n)$ to approximate the value of $y(n)$, it should be noted that these weights will approximate the fourier coefficients from the DFT. 
 
 \subsubsection{Least Squares Solution and Comparison to DFT}
+
+To find the optimised weight, $\textbf{w}_0$, that reduces the mean square error $||\textbf{y}-\hat{\textbf{y}}||^2$, set $\Delta_wJ(n)=\textbf{0}$. The results shown in TODO is
+
+\begin{equation}
+\textbf{w}_{opt}(n) = arg \min_{w}J(\textbf{w}) = \textbf{R}^{-1}\textbf{p}(n) \label{eq:4-3-a-0}
+\end{equation}
+
+where $\textbf{R}$ is the correlation matrix, and $\textbf{p}(n)$ is the cross correlation between $d(n)$ and the input.
+
+In the DFT-LMS algorithm, the input to the algorithm is the matrix $\textbf{F}$.
+
+As such, $\textbf{R}$ and $\textbf{p}$ are defined as 
+
+\begin{align}
+\textbf{R} = \textbf{F}^H\textbf{F} \label{eq:4-3-a-1}\\
+p = \textbf{F}^H\textbf{y}\label{eq:4-3-a-2}
+\end{align}
+
+Substituting \ref{eq:4-3-a-1} and \ref{eq:4-3-a-2} into \ref{eq:4-3-a-0} gives 
+
+\begin{equation}
+\textbf{w}_{opt} = \textbf{R}^{-1}\textbf{p} = (\textbf{F}^H\textbf{F})^{-1}\textbf{F}^H\textbf{y}
+\end{equation}
 
 \subsubsection{Fourier Transform as a Change of Basis}
 

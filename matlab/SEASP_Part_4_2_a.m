@@ -17,7 +17,20 @@ phase = cumsum(phase);
 
 y = exp(1j*( (2*pi/fs ) .* phase)) + noise;
 
-[a,b,c] = aryule(y, 1);
 
-
-
+figure
+subplot(1,2,1)
+    [a,b,c] = aryule(y, 1);
+    [h,z] = freqz(1, [1,-conj(a(2))], 1024);
+    plot(z/pi,10*log(abs(h)));
+    xlim([0 1])
+    title('Estimated PSD using AR(1)')
+    xlabel('Norm Frequency ($\pi$ rads)')
+    ylabel('Power (db)');
+subplot(1,2,2)
+    [a,b,c] = aryule(y, 5);
+    [h,z] = freqz(1, [1,-conj(a(2)),-conj(a(3)),-conj(a(4)),-conj(a(5))], 1024);
+    plot(z/pi,10*log(abs(h)));
+    xlim([0 1])
+    title('Estimated PSD using AR(5)')
+    xlabel('Norm Frequency ($\pi$ rads)')

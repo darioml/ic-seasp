@@ -2,14 +2,130 @@
 \begin{document}
 \section{Parametric and Line Spectra}
 
+Non-Parametric spectral estimation methods are general approaches to finding frequency components of a real-world signal. However, certain properties of our signal are known to us. This invaluable information can be used in different parametric spectral estimation methods to improve the performance.
+
+%TODO for example AR(1) process
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 2.1
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsubsection{Correlation Estimation}
+\subsection{Correlation Estimation}
+
+Recall that that the Discrete Fourier Transform (DFT) of the auto-correlation of a signal is equivalent to the PSD of that same signal, such that
+
+\begin{equation}
+P(\omega) = \sum_{k=-(k-1)}^{N-1}\hat{r}e^{jwk}
+\end{equation}
+
+where the autocorrelation is estimated based on the available samples. Following from the definition of the autocorrelation, an appropriate equation could be \ref{eq:2-1-1-ub}. Immediately a problem arises; calculating the autocorrelation for large values of $k$ will have many less reference points than for low $k$.  As there are fewer samples, the estimate at large values of $k$ can be  erratic; which in turn may make result in a non-positive definite ACF, resulting in a negative PSD.
 
 
+\begin{align}
+\text{Unbiased: } \hat{r}(k) &= \frac{1}{N-k}\sum_{n=k+1}^{N}x(n)x^*(n-k) \label{eq:2-1-1-ub}\\
+\text{Biased: } \hat{r}(k) &= \frac{1}{N}\sum_{n=k+1}^{N}x(n)x^*(n-k) \label{eq:2-1-1-b}
+\end{align}
+
+
+The biased estimator (eq \ref{eq:2-1-1-b}) solves this issue, but introduces a distortion to the ACF as a function of k. This effect can be seen in figure~\ref{fig:2-1-a-vs} (\textit{The theoretical ACF of a WGN-corrupted sinusoid should be a sinusoid with a positive offset of $\sigma_{\eta}^2$}).
+
+\begin{figure}[H]
+	\centering 
+	\resizebox{\textwidth}{!}{\input{matlabimages/2-1-a-vs.tikz}}
+	\caption{Biased against unbiased ACF estimators. Note how at large lag, the ubiased esimator gives erratic results, even though the general shape of the unbiased ACF more closely resembles the ideal ACF. }
+	\label{fig:2-1-a-vs}
+\end{figure}
+
+\subsubsection{Estimating the PSD using Biased and Unbiased Estimators}
+
+To investigate the effects of the biased and unbiased ACF estimators, three signals are generated and the PSD calculated using both equations \ref{eq:2-1-1-ub} and \ref{eq:2-1-1-b} with $P(\omega) = F(r(k))$. The results, are shown in figure~\ref{fig:q2_1_a}.
+
+\begin{figure}[H]
+	\centering 
+	\resizebox{\textwidth}{!}{\input{matlabimages/2-1-a.tikz}}
+	\caption{}
+	\label{fig:q2_1_a}
+\end{figure}
+
+It's important to note that the unbiased ACF is erradic at high values of $k$, and therefore is not positive definite. This causes negative points on the PSD, which are conceptually impossible. 
+
+
+
+
+
+\subsubsection{Estimating the PSD}
+
+In figure~\ref{fig:2-1-b}, 20 realisations of 2 sinusoids corrupted by WGN are shown in cyan ($F_s = 300Hz$, $f_1= 30Hz$, $f_2=50Hz$). The mean is superposed in blue. 
+
+As expected, the PSD shows two clear spikes at 0.2 ($30/150$) and 0.33 ($50/150$)$\pi rads$. From the standard deviation of the PSD, it's relevant to note that, again, two peaks happen around 0.2 and 0.33. This comes from the fact that each realisation spikes a different amount in this region, therefore the variance is large. Outside the two spikes around $f_1$ and $f_2$, the realisations are very close to 0, thus the variance is close to 0.
+
+\begin{figure}[H]
+	\centering
+	\begin{subfigure}[b]{0.9\textwidth}
+		\resizebox{\textwidth}{!}{\input{matlabimages/2-1-b-a.tikz}}
+		\label{fig:2-1-b-a}
+	\end{subfigure}%
+	
+	\begin{subfigure}[b]{0.9\textwidth}
+		\resizebox{\textwidth}{!}{\input{matlabimages/2-1-b-b.tikz}}
+		\label{fig:2-1-b-b}
+	\end{subfigure}
+	\label{fig:2-1-b}
+	\caption{Scalar (left) and Logarithmic (Right) representation of PSD using ensamble mean and variance.}
+\end{figure}
+
+
+\subsubsection{Estimating the PSD (logarithmic analysis)}
+
+
+The same analysis as above is made while looking at logarithmic scales. As the logarithm accentuates only the changes in the signal, two important factors change when compared to the scalar axis;
+
+\begin{itemize}
+	\item \textbf{The variation of noise is significantly higher.} This comes from the fact that small fluctuations in noise around 0 now become relevant.
+	\item \textbf{The variation around the peaks is significantly lower.} Again, as changes are accentuated in log, the variance around $f_1$ and $f_2$ significantly reduces. As each instansisation will spike significantly at these two points, the actual value it jumps to is unimportant; what matters is the order of magnitude by which it increases (Order 10).
+\end{itemize}
+
+\paragraph{Looking at the PSD estimate in logarithmic scales} is benefitial as it allows for easier identification of spikes, even with a small number of instantiasations.
+
+\subsubsection{Generation of Complex Signals}
+
+It is generally useful to consider complex signals. This is particularly true in communications, and 2-dimensional environment information (such as wind data). To this purpose, the concept of complex signals corrupted by complex (and circular) WGN and their PSDs are introduced.
+
+Complex signals are gnerally generated using a complex exponent. In figure~\ref{fig:q2_1_d}, the pure signal is defined by
+
+\[
+x = e^{1j2\pi 0.3\textbf{n}} + exp^{1j2\pi 0.32\textbf{n}}
+\]
+
+Complex, circular\footnote{Circular complex WGN has mean 0 and equal variance in all direction (i.e. probability space is defined by a perfect gaussian plane in the complex space that is centered at 0)} WGN can be generated in Matlab with
+
+\begin{lstlisting}[frame=single]
+std_dev = 0.2;
+noise = std_dev * 1/sqrt(2) * ([1 1j] * randn([2 length(n)]));
+\end{lstlisting}
+
+\paragraph{When considering the PGM-PSD estimated, } it's important to note that the number of samples used are vital for frequency resolution. As shown in fig~\ref{fig:q2_1_d}, if the sample size is too small, it becomes impossible to identify nearby-frequency peaks. 
+
+\begin{figure}[H]
+	\centering 
+	\resizebox{\textwidth}{!}{\input{matlabimages/2-1-d.tikz}}
+	\caption{Periodogram Power Spectral Density estimate for complex signals with a varying number of samples. As the number of samples increase from 30 to 60, the resolution increases and identification of the spikes at 0.3 and 0.32 can be more easily identified}
+	\label{fig:q2_1_d}
+\end{figure}
+
+
+\subsubsection{Multiple Signal Classification Algorithm (MUSIC)}
+
+%TODO Pseudospectrum
+
+
+\begin{figure}[H]
+	\centering 
+	\resizebox{\textwidth}{!}{\input{matlabimages/2-1-e.tikz}}
+	\caption{}
+	\label{fig:q2_1_e}
+\end{figure}
 
 
 
@@ -18,7 +134,52 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 2.2
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsubsection{Spectrum of Autoregressive Processes}
+\subsection{Spectrum of Autoregressive Processes}
+
+
+\subsubsection{Shortcomings of the unbiased ACF estimate}
+
+Although the unbiased ACF more closely resembles the theoretical ACF, it was shown in 2.1 to have erratic values for large time lags ($k$). This means the matrix is non-positive definite, which results in it being non-invertible. 
+
+This is a significant problem when trying to estimate the parameters for an AR process, as $\textbf{a} = \ref{fig:q2_1_d}_{xx}^{-1}\textbf{R}_{xx}$.
+
+Furthermore, even if $\textbf{R}_{xx}$ is invertible, the erratic nature at high lags will give large values - and therefore incorrect values for $\textbf{a}$.
+
+\subsubsection{Estimation of PSD}
+
+As the unbiased estimator will lead to problems when trying to estimate the AR coefficients, the biased estimator is used to find $\textbf{a}$. With these values, the PSD can be plotted, as shown in figure~\ref{fig:q2_3_b} for the AR process
+
+\[
+x(n) = 2.76x(n-1) - 3.81x(n-2) +2.65x(n-1) -0.92x(n-4) + w(n)
+\]
+
+\begin{figure}[H]
+	\centering 
+	\resizebox{\textwidth}{!}{\input{matlabimages/2-2-b.tikz}}
+	\caption{PSD estimate using AR(M) coefficient method using 1,000 estimates. Order of 2, 4 and 14 are trialled}
+	\label{fig:q2_3_b}
+\end{figure}
+
+Through experimentation, it is shown that the model order equal to that of the original AR process is ideal for calculating the PSD. This can be seen in figure~\ref{fig:q2_3_b} as the PSD holds much the same shape between $AR(5)$ and $AR(14)$. 
+
+
+
+
+\subsubsection{Effect of Model Order on PSD Estimate}
+
+\paragraph{By under-modelling the AR-process}, the PSD estimate hold an incorrect shape, and does not show peaks at the correct frequency. As this is incorrect, the effect of under-modelling is to render the PSD estimate inaccurate.
+
+\paragraph{Although over-modelling increases the quality (resolution) of the PSD,} it's important to note that this comes at a significanly increased computational load. As such, it's not recommended to unneccesarily increase the model order.
+
+\begin{figure}[H]
+	\centering 
+	\resizebox{\textwidth}{!}{\input{matlabimages/2-2-c.tikz}}
+	\caption{Reptition of experiment from figure~\ref{fig:q2_3_b}, but with 10,000 samples}
+	\label{fig:q2_3_c}
+\end{figure}
+
+
+In result, a cost-benefit analysis of resolution vs. computational complexity must be considered when deciding the model order. In situations where the model order is know to be $M$, it is recommended to hold the model order between $M$ and $M+2$, as beyond this the benefits to the PSD are unneccessarily.
 
 
 
@@ -30,10 +191,76 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 2.3
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsubsection{Time-Frequency Estimation}
+\subsection{Time-Frequency Estimation}
 
+\subsubsection{Introduction of {\tt spectrogram}}
 
+To investigate the properties of the {\tt spectrogram} function, a number of tests were run to determine the effects of $window, noverlap, nfft$, and $fs$ on the resulting spectrogram. (\textit{Through out the tests, the size of $window$ and $nfft$ were keps equal.})
 
+The results gathered from experimentation; (some of these tests shown in figure~\ref{fig:2-3-a})
+
+\begin{enumerate}
+	\item \textbf{\textit{fs}} is the sampling frequency. The spectrogram uses this to scale the x-axis (from 0 to length(x)/fs seconds) and the y-axis (0 to fs/2 Hz). 
+	
+	From the {\tt chirp} function, the sampling frequency is extracted as 1000. 
+	
+	\item \textbf{\textit{window}} defined the window to be used. The Hamming, Hanning, Rectangular and Chebyshev windows were tested.
+	
+	The Hanning window was chosen as it provided the largest deviation in the frequency domain. 
+	
+	\item \textbf{\textit{nfft}} was used as both the size of the window, but also as the resolution of the FFT inside the {\tt spectrogram} function. Increasing the FFT generally increases the resolution of the spectrogram in the y-axis, but at an additional computational cost.
+	
+	An FFT of around 128 or 256 was found to be ideal, as beyond this the hanning window spread the frequency domain too much.
+	
+	\item \textbf{\textit{noverlap}} defined the overlap between time windows. Increasing this value improved the time resolution, but at a significant cost to computation and memory (\textit{as there are many more values for the spectrogram!}).
+	
+	An overlap of around $80\%$ was found best in most analytical cases; however, it is worth dropping this to improve speed.
+\end{enumerate}
+
+\begin{figure}[h]
+	\centering
+	\begin{subfigure}[b]{\textwidth}
+		\centering
+		\includegraphics[width=0.8\textwidth]{images/2-3-a-1-new.pdf}
+		\caption{Effect of {\tt fs} on the spectrogram. $fs=1000$ is clearly the only correc answer!}
+		\label{fig:2-3-a-1}
+	\end{subfigure}%
+	
+	\begin{subfigure}[b]{\textwidth}
+		\centering
+		\includegraphics[width=0.8\textwidth]{images/2-3-a-2.pdf}
+		\caption{Effect of {\tt window} type on the spectrogram.}
+		\label{fig:2-3-a-2}
+	\end{subfigure}
+	
+	\begin{subfigure}[b]{\textwidth}
+		\centering
+		\includegraphics[width=0.8\textwidth]{images/2-3-a-3.pdf}
+		\caption{Effect of {\tt nfft} and therefore the window size on the spectrogram.}
+		\label{fig:2-3-a-3}
+	\end{subfigure}
+	
+	\begin{subfigure}[b]{\textwidth}
+		\centering
+		\includegraphics[width=0.8\textwidth]{images/2-3-a-4.pdf}
+		\caption{Effect of {\tt noverlap} on the spectrogram.}
+		\label{fig:2-3-a-4}
+	\end{subfigure}
+	\label{fig:2-3-a}
+\end{figure}
+
+\subsubsection{Time-Frequency analysis of EEG data}
+
+Applying our learnings form the previous section to the EEG data from section 1.4 wil allow us to verify our previous findings. The EEG POz data is passed through the spectrogram function with a hanning window, 30\% overlap and nfft = $[2046, 4096]$, as these were shown to produce the best results.
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=0.8\textwidth]{images/2-3-b.pdf}
+	\caption{Spectrogram of the POz EEG data. Note the AZ hum at 50Hz, as well as brainwaves from 8-10 Hz. A faint line can be seen around 13Hz and 26Hz, corresponding to the SSVP}
+	\label{fig:2-3-b}
+\end{figure}
+
+The reason for using such a high NFFT was from the desire to have a high frequency resolution. With a sampling frequency of $1200Hz$, the setting the {\tt nfft} value to $2046$ gives about 2 bins per Hertz. This is increased to around 4 bins per Hertz, allowing for better identification of the 13Hz SSVP.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -41,7 +268,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 2.4
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsubsection{Real World Signals: Respiratory Sinus Arrhythmia from RR-Intervals}
+\subsection{Real World Signals: Respiratory Sinus Arrhythmia from RR-Intervals}
 
 \pagebreak
 \end{document}
