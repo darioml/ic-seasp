@@ -12,7 +12,7 @@ w(n+1) &= w(n) - \mu \frac{\partial}{\partial w}\left( \frac{1}{2}e^2(n) \right)
 &= w(n) + \mu e(n) x(n) \numberthis \label{equation-lms}
 \end{align*}
 
-where $e(n) = x(n) - \hat{x}(n)$. In what followed, we look at the LMS algorithm under a number of circumstances and try to ensure that conversion is always possible and reasonably fast. % TODO: quanitfy this
+where $e(n) = x(n) - \hat{x}(n)$. In what followed, we look at the LMS algorithm under a number of circumstances and try to ensure that conversion is always possible and reasonably fast. 
 
 
 
@@ -41,14 +41,14 @@ E \left\{ x[n-2]x[n-1]\right\} & E \left\{x[n-2]^2 \right\} \end{array}
 \right]
 \end{align*}
 
-From here, we can consider %TODO: \cite{Garc2012a};
+From here, we can consider \cite{Garc2012a};
 
 \begin{align}
 x(n) = a_1*x(n-1) + a_2*x(n-2) + \eta(n)
 \label{corr-mtx-base}
 \end{align}	
 
-Two tricks are now used to find $\gamma(0)$ and $\gamma(1)$. To find the variance, $\gamma(0)$, both sides of equation~\ref{corr-mtx-base} are squared and the expectation is taken. To find $\gamma(1)$, each side is multiplied by a $x(n-1)$ term \footnote{ A more general trick that is useful for finding the auto-correlation function for any distance can be done by multiplying eq~\ref{corr-mtx-base} by $x(n-k)$TODOcite{Cochrane1997a}. This gives the result $\gamma(k) = a_1\gamma(k-1) + a_2\gamma(k-2)$. However, it is more intutive and helpful to look at the two individual cases of $\gamma = 0,1$. }.
+Two tricks are now used to find $\gamma(0)$ and $\gamma(1)$. To find the variance, $\gamma(0)$, both sides of equation~\ref{corr-mtx-base} are squared and the expectation is taken. To find $\gamma(1)$, each side is multiplied by a $x(n-1)$ term \footnote{ A more general trick that is useful for finding the auto-correlation function for any distance can be done by multiplying eq~\ref{corr-mtx-base} by $x(n-k)$\cite{Cochrane1997a}. This gives the result $\gamma(k) = a_1\gamma(k-1) + a_2\gamma(k-2)$. However, it is more intutive and helpful to look at the two individual cases of $\gamma = 0,1$. }.
 
 \begin{align*}
 E\left[x^2(n)\right] &= \gamma(0) = E\left[  (a_1x(n-1) + a_2x(n-2) + \eta(n))^2  \right]\\
@@ -174,7 +174,7 @@ Over 100 independant trials of the LMS algorithm, the mean values of the estimat
 
 \subsubsection{Leaky LMS}
 
-The cost function used in the standard LMS algorithm does not always converge. TODO: When does it not. A work-around in these situations is to look at changing the error function to include a leakage term, allowing for convergance. 
+The cost function used in the standard LMS algorithm does not always converge. A work-around in these situations is to look at changing the error function to include a leakage term, allowing for convergance. 
 
 In this situation, the error function that is to be minimised is change to include an additional term; $J_2(n) = \frac{1}{2}(e^2(n) + \gamma||w(n)||^2_2)$. From here, it is trivial to prove that the weights update according to $\textbf{w}(n+1) = (1-\mu \gamma)\textbf{w}(n) + \mu e(n)\textbf{x}(n)$.
 
@@ -217,16 +217,13 @@ Starting with;
 
 Though the values do approach the original filter parameters $[0.1, 0.8]$, there is a considerably larger bias when compared to the original LMS filter. In the normal LMS filter, a maximum error of around 4\% was seen - however, in the leaky LMS, both coefficients show a bias of around 10\% to 30\%.
 
-The large error factor is explained by the addition of the leak factor $-\mu\gamma\textbf{w}(n)$, which continually reduces the strength of the weights, even in steady state. In fact, it can be shown that the convergence of the weights is related to a corrupted version of the correlation matrixTODOcite{Kamenetsky2004}:
+The large error factor is explained by the addition of the leak factor $-\mu\gamma\textbf{w}(n)$, which continually reduces the strength of the weights, even in steady state. In fact, it can be shown that the convergence of the weights is related to a corrupted version of the correlation matrix\cite{Kamenetsky2004}:
 
 \begin{align*}
 \lim_{k \to \inf}E(\textbf{w}(n)) = (\textbf{R} + \gamma \textbf{I})^{-1}\textbf{p}
 \end{align*}
 
 where $\textbf{I}$ is the identity matrix and $\textbf{p}$ the cross correlation vector. The additional corruption of the auto-correlation matrix allows it to be inverted, but yields biased results.
-
-% TODO: define cross correlation
-
 
 
 
@@ -405,7 +402,7 @@ To investigate the performance of the Filter Order ($M$) and the delta delay ($\
 
 By running the ALE algorithm on the $s(n)$ for $M=[5,10,15,20]$ and a range of $\Delta$ values, the effects of the algorithm parameters can be calculated. The results are shown in figure ~\ref{fig:q3_3_b}.
 
-\paragraph*{Effect of Time Shift}($\Delta$): Increasing the value of the time shift in the ALE algorithm increases the value of the MPSE. An increased value of $\Delta$ will delay the input, and therefore mean that the output $\hat{y}(n)$ is being prediced with older values of $\textbf{x}(n)$. %TODO
+\paragraph*{Effect of Time Shift}($\Delta$): Increasing the value of the time shift in the ALE algorithm increases the value of the MPSE. An increased value of $\Delta$ will delay the input, and therefore mean that the output $\hat{y}(n)$ is being prediced with older values of $\textbf{x}(n)$. 
 
 \paragraph*{Effect of Model Order:} Although generally the MPSE reduces with model order, the difference between a model oder 5 or anything above is relatively low (about 2\% difference for $\Delta$ = 3). This is an acceptable difference in error, and so a model order of 5 is perfect for this situation.
 
@@ -437,7 +434,7 @@ The methods descirbed above can be applied to the EEG Dataset introduced in Sect
 
 \begin{figure}[H]
 	\centering
-	\includegraphics[width=0.66\textwidth]{images/3-3-d-1.pdf}
+	\includegraphics[width=0.66\textwidth]{images/test.png}
 	\caption{Comparison of POz data with 50Hz humm removed (left) and original (right).}
 	\label{fig:3-3-d-1}
 \end{figure}
@@ -446,13 +443,11 @@ It can be seen from figure~\ref{fig:3-3-d-1} that the 50Hz hum has been complete
 
 \begin{figure}[H]
 	\centering
-	\includegraphics[width=0.4\textwidth]{images/3-3-d-2.pdf}
+	\includegraphics[width=0.4\textwidth]{images/3-3-d-2.png}
 	\caption{Spectrogram of difference between original and noise removed graph.}
 	\label{fig:3-3-d-2}
 \end{figure}
 
 
-
-%TODO: write this up a little more nicely.
 
 \end{document}

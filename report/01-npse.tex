@@ -351,7 +351,19 @@ By ranging over a number of magnitude for the signal $a_2$ (\textit{increasingly
 
 \subsubsection{Fourier tranform of the Bartlett window}
 
-%TODO: I don't understand this
+
+The expected value of the periodogram is the convolution of the ideal PSD and the fourier transform of the window. In analysing the shape of the Bartlett filter, one sees the smallest value at $x/N$, where $x$ is an integer.
+
+
+\begin{figure}[H]
+	\centering 
+	\resizebox{\textwidth}{!}{\input{matlabimages/1-3-e.tikz}}
+	\caption{Amplitude of the frequency response of the Bartlett window for $\alpha$ = 4 and 12.}
+	\label{fig:q1_3_e}
+\end{figure}
+
+
+Therefore, it becomes understandable why the sinusoid with the weaker amplitude is being masked; the troughs of the transform overlap with locations for the peak of $\alpha/N$ for $\alpha = 4, 12$. Therefore, changing the value of $\alpha$ in the above has a almost no effect, as seen whe comparing figures \ref{fig:q1_3_d-4} and \ref{fig:q1_3_d-12}.
 
 
 
@@ -364,7 +376,7 @@ To explore the effect of the Chebyshev filter, two realisations of $x(n)$ with $
 \begin{figure}[H]
 	\centering 
 	\resizebox{\textwidth}{!}{\input{matlabimages/1-3-f.tikz}}
-	\caption{Effect of the Chebyshev filter with different input signals and sidelobe attenuation. Top three images have $a1:a2$ 1:10; bottom three ratio is 1:1000.}
+	\caption{Effect of the Chebyshev filter with different input signals and sidelobe attenuation. Top three images have $a1:a2$ 1:10; bottom three ratio is 1:1000. See fig~\ref{fig:q1_3_f_bw} for corresponding Blackman-Tuckey window}
 	\label{fig:q1_3_f}
 \end{figure}
 
@@ -374,6 +386,13 @@ The experiment run in section (d) is repeated with the chebyshev filters with a 
 
 
 
+
+\begin{figure}[h]
+	\centering 
+	\resizebox{\textwidth}{!}{\input{matlabimages/1-3-f-bw.tikz}}
+	\caption{Effect of the Chebyshev filter with Blackman-Window with different input signals and sidelobe attenuation. Top three images have $a1:a2$ 1:10; bottom three ratio is 1:1000.}
+	\label{fig:q1_3_f_bw}
+\end{figure}
 
 
 
@@ -394,7 +413,6 @@ The experiment run in section (d) is repeated with the chebyshev filters with a 
 \subsection{Periodogram-based Methods Applied to Real-World Data}
 
 
-%TODO explain something here
 
 \subsubsection{Sunspot Time Series}
 

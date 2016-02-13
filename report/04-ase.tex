@@ -58,7 +58,7 @@ To investiage the performance of the CLMS and the ACLMS algorithms for the wind 
 \begin{figure}[H]
 	\centering 
 	\resizebox{0.9\textwidth}{!}{\input{matlabimages/4-1-b-2.tikz}}
-	\caption{Model Prediction for the Bivariate wind data.}
+	\caption{Model Prediction for the Bivariate wind data. Error is the Mean Square Steady State Error calculated over the last 100 iterations}
 	\label{fig:q4_1_b_2}
 \end{figure}
 
@@ -115,7 +115,7 @@ arg(e^{j(2 \pi \frac{f_0}{f_s})}) &= arg(h^*(n)) \\
 f_0 &= - \frac{f_s}{2\pi} arctan\left(\frac{\Im(h(x))}{\Re(h(x))}\right) \\
 \end{align*}
 
-\paragraph{For the widely linear model,} the equations \ref{eq-4-1-c-unbal} and \ref{eq-4-1-d-second} are used to gather terms for $v(n+1)$ and $\hat{v}(n+1)$. The coefficients for both of these terms are equated to extrapolate the value of $f_0$ %TODO \cite{Xia2012} 
+\paragraph{For the widely linear model,} the equations \ref{eq-4-1-c-unbal} and \ref{eq-4-1-d-second} are used to gather terms for $v(n+1)$ and $\hat{v}(n+1)$. The coefficients for both of these terms are equated to extrapolate the value of $f_0$ \cite{Xia2012} 
 
 \begin{align*}
 v(n+1) &= A(n+1)e^{j2\pi\frac{f_0}{f_s}}e^{j(2\pi  \frac{f_0}{f_s}n+\phi)} + B(n+1)e^{-j2\pi\frac{f_0}{f_s}}e^{-j(2\pi  \frac{f_0}{f_s}n+\phi)}\\
@@ -185,35 +185,50 @@ In section 2.2, the AR spectrum of a stationary signal was produced. However, th
 \subsubsection{Filter Coefficients for AR(1)}
 
 
+Before using the LMS function, the Yule-Walker equations are used across the entire signal (1500) points to try and estimate a PSD. The results using an AR(1) are shown side-by-side with the AR(5) estimate in figure~\ref{fig:q4_2_a}.
+
 \begin{figure}[H]
 	\centering 
 	\resizebox{0.9\textwidth}{!}{\input{matlabimages/4-2-a.tikz}}
-	\caption{}
+	\caption{Estimated PSD using the Yule-Walker equations to estimate AR-coefficients. These are then used with {\tt freqz} to generate a PSD.}
 	\label{fig:q4_2_a}
 \end{figure}
+
+However, as the Yule Walker equations try to estimate a single coefficient for the entire frequency, FM signal, the frequency change at $n=500, 1000$ do not seem to be properly captured (\textit{especially not in the AR(1) process}).
 
 
 \subsubsection{Spectrogram using the LMS Algorithm}
 
+Using the CLMS algorithm, the yule walker equations are applied for each pair of filter coefficients (over N), and the resulting spectrogram is shown in fig~\ref{fig:4-2-b-1}. The corresponding weights are shown in \ref{fig:4-2-b-2}. 
 
 \begin{figure}[H]
 	\centering
-	\begin{subfigure}[b]{0.9\textwidth}
-		\includegraphics[width=\textwidth]{images/4-2-b-1.pdf}
-		\caption{}
+	\begin{subfigure}[b]{0.7\textwidth}
+		\includegraphics[width=\textwidth]{images/4-2-b-1.png}
+		\label{fig:4-2-b-1}
+		\caption{Spectrogram of the FM signal, generated using the CLMS algorithm weights}
 	\end{subfigure}%
 	
-	\begin{subfigure}[b]{0.9\textwidth}
+	\begin{subfigure}[b]{0.7\textwidth}
 		\resizebox{\textwidth}{!}{\input{matlabimages/4-2-b-2.tikz}}
-		\caption{}
+		\label{fig:4-2-b-2}
+		\caption{Real and Imaginary parts of the AR(1) weight over time.}
 	\end{subfigure}
 	\caption{}
-	\label{}
+	\label{fig:4-2-b}
 \end{figure}
 
+Unlike fig~\ref{fig:q4_2_a}, the spectrogram generated here allows us to see into the PSD over time. As such, we can clearly see the a linear PSD, centered around $0.05\pi$ from $N=0:500$. From $N=500:1000$, the PSD linearly increases from $0.05\pi$ to around $0.1\pi$. For the last segment, a parabolic shape is shown. It's interesting to now that between $N=1000:1200$, the CLMS system is converging towards the correct weights, and therefore the parabola is of a strange shape. 
+
+\paragraph{Effect of $\mu$ on the Spectrogram.} As the convergence of the weights, and therefore the estimation of the PSD, is dependant on the learning rate $\mu$, increasing it has the effect of increasing convergence. However, a learning coefficient that is very high will be sensitive to noise - and therefore the resulting PSD will be considerably less smooth.
 
 
-
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.7\textwidth]{images/4-2-b-3.png}
+	\label{fig:4-2-b-3}
+	\caption{Effect of $\mu$ on the LMS Spectrogram}
+\end{figure}%
 
 
 \subsection{A Real Time Spectrum Analyser Using Least Mean Square}
@@ -244,7 +259,7 @@ As the LMS algorithm now searches for weights that will linearly combine harmoni
 
 \subsubsection{Least Squares Solution and Comparison to DFT}
 
-To find the optimised weight, $\textbf{w}_0$, that reduces the mean square error $||\textbf{y}-\hat{\textbf{y}}||^2$, set $\Delta_wJ(n)=\textbf{0}$. The results shown in TODO is
+To find the optimised weight, $\textbf{w}_0$, that reduces the mean square error $||\textbf{y}-\hat{\textbf{y}}||^2$, set $\Delta_wJ(n)=\textbf{0}$. The result shown in the lecture slides is
 
 \begin{equation}
 \textbf{w}_{opt}(n) = arg \min_{w}J(\textbf{w}) = \textbf{R}^{-1}\textbf{p}(n) \label{eq:4-3-a-0}
@@ -269,22 +284,47 @@ Substituting \ref{eq:4-3-a-1} and \ref{eq:4-3-a-2} into \ref{eq:4-3-a-0} gives
 
 \subsubsection{Fourier Transform as a Change of Basis}
 
+When talking about a change of basis, the key concept is changing the axis on which a vector lies. The careful definition of two complimentary dimension spaces and relevant projection matricies is the foundation of basis changing. The previously explored MUSIC algorithm, for instance, was one such change of basis used to distinguish a signal from it's noise. Other examples are Principal Component Analysis (PCA) or Linear Discriminant Analysis (LDA). 
+
+Converting the LMS algorithm to a real-time spectral estimator invokes a different way of thinking about the discrete fourier transform (DFT). By considering a given discrete-time signal of N lengths as a vector in N dimensions (\textit{one dimension for each value of N, i.e. time}), one can define the dimension space of size N $T$. This space is one way of expressing the information held by N-samples by holding one variable for each sample of time.
+
+One can now consider an equally large dimension space, but where each dimension represents a frequency (of size $n/N$, where $n \in [1,N]$). This dimension space can be called $\Omega$, and it holds information on signals by storing the value of each frequency. 
+
+As such, taking the DFT or the IDFT of a signal can be thought of as the conversion between these dimensional subspaces. This process is esentially what is attempted in the DFT-LMS algorithm.
+
 \subsubsection{DFT-CLMS implementation of FM signal}
 
-By using the DFT-CLMS algorithm defined in Equation~\ref{eq-4-3-dft-clms}, the time-frequency plot is created by a heat diagram of the weights $\textbf{w}(n)$. %TODO: Compare this tot he AR-spectrum
+By using the DFT-CLMS algorithm defined in Equation~\ref{eq-4-3-dft-clms}, the time-frequency plot is created by a heat diagram of the weights $\textbf{w}(n)$.
 
-%TODO: Why does it not resemble the true power specturm
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.7\textwidth]{images/4-3-c.png}
+	\caption{Spectrogram of the FM signal calculated with the DFT-CLMS algorithm}
+	\label{fig:4-3-c}
+\end{figure}%
 
-The spectrum from figure TODO is only an estimate of the true spectrum of theunderlying signal. Two considerations need to be considered to understand why it is not exact. 
+The spectrum from figure \ref{fig:4-3-c} is only an estimate of the true spectrum of theunderlying signal. Two considerations need to be considered to understand why it is not exact. 
 
 \begin{enumerate}
-	\item The DFT-CLMS at steady state only approximates the actual value of $y(n)$ with a linear combination of the harmonically related sinusoidal input $\textbf{x}(n)$. As such, the spectrum in figure TODO is of the estimated signal $\hat{y}(n)$, defined in equation~\ref{eq-4-3-a-yhat}.
-	\item Depending on the value of $\mu$, it should be noted that the values of $w(n)$ do not always approach the exact value of the fourier coefficients. Therefore, the spectrum will not be exact, especially for a rich input signal $y(n)$. From cite{TODO Widrow1987} the spectrum is at it's most exact when $\mu$ is set to $1/2$.
+	\item The DFT-CLMS at steady state only approximates the actual value of $y(n)$ with a linear combination of the harmonically related sinusoidal input $\textbf{x}(n)$. As such, the spectrum in figure \ref{fig:4-3-c} is of the estimated signal $\hat{y}(n)$, defined in equation~\ref{eq-4-3-a-yhat}.
+	\item Depending on the value of $\mu$, it should be noted that the values of $w(n)$ do not always approach the exact value of the fourier coefficients. Therefore, the spectrum will not be exact, especially for a rich input signal $y(n)$. From \cite{Widrow1987} the spectrum is at it's most exact when $\mu$ is set to $1$.
 \end{enumerate}
 
 \subsubsection{Applying the DFT-CLMS for EEG Data}
 
+The DFT-CLMS algorithm is turned to use on the POz data set used in section 1.4. As figure~\ref{fig:4-3-b-poz} shows, however, the resolution of the algorithm does not allow for identificatio of the SSVP. It is possible, however, to see a sharp line at 50Hz and noise around 7-10Hz, which correspond to the mains line hum and alpha brain waves respectively. 
 
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.7\textwidth]{images/4-3-b-poz.png}
+	\label{fig:4-3-b-poz}
+	\caption{Spectrogram calculated with the DFT-CLMS algorithm}
+\end{figure}%
 
+\paragraph{The limitations of the DFT-CLMS} algorithm are evidences here. As the algorithm converts N-time samples into N-frequency bins, the resolution in the frequency domain is insufficient for this case. A potential work-around is to zero-pad the input, but this adds significant computational load \footnote{This has not been tested by myself, and so cannot be verified}.
+
+\subsubsection{Potential Applications for the DFT-LMS function}
+
+Being able to calculate the DFT on-the-fly is extremely useful in a number of sitations. From the experiments shown here, and those run seperately, the key limitation of the DFT-LMS algorithm is in the resolution of the output. As such, the DFT-LMS can be used in situations where simple spectral comonents need to be tracked (rather than calculated). 
 
 \end{document}

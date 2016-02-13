@@ -4,7 +4,6 @@
 
 Non-Parametric spectral estimation methods are general approaches to finding frequency components of a real-world signal. However, certain properties of our signal are known to us. This invaluable information can be used in different parametric spectral estimation methods to improve the performance.
 
-%TODO for example AR(1) process
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -19,7 +18,7 @@ Recall that that the Discrete Fourier Transform (DFT) of the auto-correlation of
 P(\omega) = \sum_{k=-(k-1)}^{N-1}\hat{r}e^{jwk}
 \end{equation}
 
-where the autocorrelation is estimated based on the available samples. Following from the definition of the autocorrelation, an appropriate equation could be \ref{eq:2-1-1-ub}. Immediately a problem arises; calculating the autocorrelation for large values of $k$ will have many less reference points than for low $k$.  As there are fewer samples, the estimate at large values of $k$ can be  erratic; which in turn may make result in a non-positive definite ACF, resulting in a negative PSD.
+where the autocorrelation is estimated based on the available samples. Following from the definition of the autocorrelation, an appropriate estimating equation could be \ref{eq:2-1-1-ub}. Immediately a problem arises; calculating the autocorrelation for large values of $k$ will have many less reference points than for low $k$.  As there are fewer samples, the estimate at large values of $k$ can be  erratic; which in turn may make result in a non-positive definite ACF, resulting in a negative PSD.
 
 
 \begin{align}
@@ -71,8 +70,8 @@ As expected, the PSD shows two clear spikes at 0.2 ($30/150$) and 0.33 ($50/150$
 		\resizebox{\textwidth}{!}{\input{matlabimages/2-1-b-b.tikz}}
 		\label{fig:2-1-b-b}
 	\end{subfigure}
-	\label{fig:2-1-b}
 	\caption{Scalar (left) and Logarithmic (Right) representation of PSD using ensamble mean and variance.}
+	\label{fig:2-1-b}
 \end{figure}
 
 
@@ -117,8 +116,17 @@ noise = std_dev * 1/sqrt(2) * ([1 1j] * randn([2 length(n)]));
 
 \subsubsection{Multiple Signal Classification Algorithm (MUSIC)}
 
-%TODO Pseudospectrum
+The main concept behind the MUltiple SIgnal Classification (MUSIC) algorithm, is to decompose the autocorrelation matrix into it's constituant eigen vector/value pairs. These are then used to classify each frequency as noise or signal. From here, a pseudospectrum that resembles the underlying noise-free PSD can be drawn.
 
+Assume a given signal $\textbf{x}$ is driven by $\textbf{p}$ complex exponentials in complex, circular WGN. The eigenvectors corresponding to the $p$ largest eigenvalues will hold the (\textit{noise-free}) signal span space. The remaining $M-p$ eigenvectors hold only noise. 
+
+The psudospectrum can then be plotted as
+
+\[
+\hat P_{MU}(e^{j \omega}) = \frac{1}{\sum_{i=p+1}^{M} |\mathbf{e}^{H} \mathbf{v}_i|^2}
+\]
+
+Using the provided code, the results are shown in figure~\ref{fig:q2_1_e}.
 
 \begin{figure}[H]
 	\centering 
@@ -126,6 +134,30 @@ noise = std_dev * 1/sqrt(2) * ([1 1j] * randn([2 length(n)]));
 	\caption{}
 	\label{fig:q2_1_e}
 \end{figure}
+
+\paragraph{Matlab Implementation}
+
+\begin{itemize}
+	\item {\tt [X,R] = corrmtx(x,14,'mod')}
+	
+	This calculated the Toepliz matrix $\textbf{X} \in R^{(n+m)x(m+1)}$ , which can be used to generate the autocorrelation matrix of the input. Inputs are {\tt x}, the data on which to apply MUSIC. The second argument defined {\tt mod} is used to explain the format of the output (in this case the m*m autocorrelation of M).
+	
+	The outputs are {\tt X}, the Toeplitz matrix and {\tt R}, the autocorrelation matrix.
+	\item {\tt [S,F] = pmusic(R,2,[ ],1,'corr')}
+	
+	This calculated the pseudospectrum using the MUSIC algorithm. The inputs are (sequentially) the autocorrelation matrix calculated above, the dimension of the signal subspace (\textit{how many complex signals}), the length of the fft (nfft), 'corr' to specify the first input was the correlation matrix.
+	
+	The output is S, the pseudospectrum calculated by the MUSIC algorithm, and F, the relevant frequencies.
+	\item {\tt plot(F,S,'linewidth',2); set(gca,'xlim',[0.25 0.40]) }
+	
+	This will plot the MUSIC pseudospectrum with a line thickness of 2, and focus on the frequencies between 0.25 and 0.4.
+\end{itemize}
+
+\paragraph{Advantages of the MUSIC.}
+
+With enough information about the underlying algorithm, MUSIC is able to almost perfectly generate a PSD. It requires very few data points, and is able to generate perfectly smooth spectral density plots. Furthermore, as the output is continuously calculated, there are no issues around frequency resolution as in other estimation methods.
+
+\paragraph{Disadvantages of MUSIC.} As mention above, the MUSIC algorithm is able to perform outstandingly, but only when enough data about the underlying signal is known. As expained by the parameters above, one must know the number of underlying complex signals. Without this information, the pseudospectrum generated by the MUSIC algorithm may be misleading or incorrect.
 
 
 
@@ -197,6 +229,40 @@ In result, a cost-benefit analysis of resolution vs. computational complexity mu
 
 To investigate the properties of the {\tt spectrogram} function, a number of tests were run to determine the effects of $window, noverlap, nfft$, and $fs$ on the resulting spectrogram. (\textit{Through out the tests, the size of $window$ and $nfft$ were keps equal.})
 
+\begin{figure}[H]
+	\centering
+	\begin{subfigure}[b]{\textwidth}
+		\centering
+		\includegraphics[width=0.8\textwidth]{images/2-3-a-1.png}
+		\caption{Effect of {\tt fs} on the spectrogram. $fs=1000$ is clearly the only correct answer!}
+		\label{fig:2-3-a-1}
+	\end{subfigure}%
+	
+	\begin{subfigure}[b]{\textwidth}
+		\centering
+		\includegraphics[width=0.8\textwidth]{images/2-3-a-2.png}
+		\caption{Effect of {\tt window} type on the spectrogram.}
+		\label{fig:2-3-a-2}
+	\end{subfigure}
+	
+	\begin{subfigure}[b]{\textwidth}
+		\centering
+		\includegraphics[width=0.8\textwidth]{images/2-3-a-3.png}
+		\caption{Effect of {\tt nfft} and therefore the window size on the spectrogram.}
+		\label{fig:2-3-a-3}
+	\end{subfigure}
+	
+	\begin{subfigure}[b]{\textwidth}
+		\centering
+		\includegraphics[width=0.8\textwidth]{images/2-3-a-4.png}
+		\caption{Effect of {\tt noverlap} on the spectrogram.}
+		\label{fig:2-3-a-4}
+	\end{subfigure}
+	\caption{Experimenting with {\tt spectrogram}}
+	\label{fig:2-3-a}
+\end{figure}
+
+
 The results gathered from experimentation; (some of these tests shown in figure~\ref{fig:2-3-a})
 
 \begin{enumerate}
@@ -217,45 +283,13 @@ The results gathered from experimentation; (some of these tests shown in figure~
 	An overlap of around $80\%$ was found best in most analytical cases; however, it is worth dropping this to improve speed.
 \end{enumerate}
 
-\begin{figure}[h]
-	\centering
-	\begin{subfigure}[b]{\textwidth}
-		\centering
-		\includegraphics[width=0.8\textwidth]{images/2-3-a-1-new.pdf}
-		\caption{Effect of {\tt fs} on the spectrogram. $fs=1000$ is clearly the only correc answer!}
-		\label{fig:2-3-a-1}
-	\end{subfigure}%
-	
-	\begin{subfigure}[b]{\textwidth}
-		\centering
-		\includegraphics[width=0.8\textwidth]{images/2-3-a-2.pdf}
-		\caption{Effect of {\tt window} type on the spectrogram.}
-		\label{fig:2-3-a-2}
-	\end{subfigure}
-	
-	\begin{subfigure}[b]{\textwidth}
-		\centering
-		\includegraphics[width=0.8\textwidth]{images/2-3-a-3.pdf}
-		\caption{Effect of {\tt nfft} and therefore the window size on the spectrogram.}
-		\label{fig:2-3-a-3}
-	\end{subfigure}
-	
-	\begin{subfigure}[b]{\textwidth}
-		\centering
-		\includegraphics[width=0.8\textwidth]{images/2-3-a-4.pdf}
-		\caption{Effect of {\tt noverlap} on the spectrogram.}
-		\label{fig:2-3-a-4}
-	\end{subfigure}
-	\label{fig:2-3-a}
-\end{figure}
-
 \subsubsection{Time-Frequency analysis of EEG data}
 
 Applying our learnings form the previous section to the EEG data from section 1.4 wil allow us to verify our previous findings. The EEG POz data is passed through the spectrogram function with a hanning window, 30\% overlap and nfft = $[2046, 4096]$, as these were shown to produce the best results.
 
-\begin{figure}[h]
+\begin{figure}[H]
 	\centering
-	\includegraphics[width=0.8\textwidth]{images/2-3-b.pdf}
+	\includegraphics[width=0.8\textwidth]{images/2-3-b-1.png}
 	\caption{Spectrogram of the POz EEG data. Note the AZ hum at 50Hz, as well as brainwaves from 8-10 Hz. A faint line can be seen around 13Hz and 26Hz, corresponding to the SSVP}
 	\label{fig:2-3-b}
 \end{figure}
@@ -269,6 +303,40 @@ The reason for using such a high NFFT was from the desire to have a high frequen
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Real World Signals: Respiratory Sinus Arrhythmia from RR-Intervals}
+
+\subsubsection{PSD of RRI data}
+
+Using the raw ECG data, RR-information was extracted for three experiments - normal breathing, breathing at 50Hz and breathing at 15Hz. The original PSD, as well as averaged versions are shown below.
+
+\begin{figure}[H]
+	\centering
+	
+	\begin{subfigure}[b]{\textwidth}
+		\centering
+		\resizebox{\textwidth}{!}{\input{matlabimages/2-4-a-psd1.tikz}}
+		\caption{PSD for Experiment 1 with different window sizes}
+		\label{fig:2-4-a-psd1}
+	\end{subfigure}%
+	
+	\begin{subfigure}[b]{\textwidth}
+		\centering
+		\resizebox{\textwidth}{!}{\input{matlabimages/2-4-a-psd2.tikz}}
+		\caption{PSD for Experiment 2 with different window sizes}
+		\label{fig:2-4-a-psd2}
+	\end{subfigure}%
+	
+	\begin{subfigure}[b]{\textwidth}
+		\centering
+		\resizebox{\textwidth}{!}{\input{matlabimages/2-4-a-psd3.tikz}}
+		\caption{PSD for Experiment 3 with different window sizes}
+		\label{fig:2-4-a-psd3}
+	\end{subfigure}%
+\end{figure}
+
+
+\subsubsection{Identifications of anomalee}
+
+Although the peaks in the spectrum are not where expected, there are clear anomalies in the PSDs of each experiment which can be extrapolated. Experiment 2 shows a frequency component not seen in other experiemnt at $123Hz$. Experiment 3 shows an peak at around $30Hz$. 
 
 \pagebreak
 \end{document}

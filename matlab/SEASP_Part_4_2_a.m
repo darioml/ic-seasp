@@ -34,3 +34,16 @@ subplot(1,2,2)
     xlim([0 1])
     title('Estimated PSD using AR(5)')
     xlabel('Norm Frequency ($\pi$ rads)')
+    
+%% ideal
+
+fft_dm1911 = @(x) abs(fftshift(fft(x))).^2;
+w = linspace(-1,1,(length(y))+1);
+w = w(1:(end-1));
+
+figure;
+    plot(w, fft_dm1911(y));
+    title('Zero Mean Signal');
+    axis tight;
+    ylabel('Mag of PSD')
+    xlabel('Frequency (Hz)')
